@@ -7,6 +7,11 @@ const config = {
   name: 'Custom Seo',
   entryPointUriPath,
   cloudIdentifier: 'gcp-au',
+  headers: {
+    csp: {
+      'connect-src': ['http://localhost:4000/products'],
+    },
+  },
   env: {
     development: {
       initialProjectKey: 'ct-assessment',
