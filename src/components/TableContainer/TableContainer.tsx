@@ -16,7 +16,33 @@ export interface IProduct {
 
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
-  const [tableData, setTableData] = useState<IProduct[]>([]);
+  const [tableData, setTableData] = useState<IProduct[]>([
+    {
+      "productKey": "123",
+      "name": "Tata car",
+      "seoTitle": "test title",
+      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+      "productKey": "567",
+      "name": "Tesla car",
+      "seoTitle": "test title",
+      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+
+    {
+      "productKey": "248",
+      "name": "Tata car",
+      "seoTitle": "test title",
+      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },
+    {
+      "productKey": "789",
+      "name": "Tesla car",
+      "seoTitle": "test title",
+      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    }
+  ]);
 
   const [search, setSearch] = useState('');
 
@@ -74,7 +100,7 @@ const TableContainer = () => {
       ),
     },
   ]);
-  
+
   useEffect(() => {
     const productsData = async () => {
       try {
