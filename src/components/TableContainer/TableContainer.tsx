@@ -1,4 +1,11 @@
-import { SetStateAction, useState, useMemo, useEffect } from 'react';
+import {
+  SetStateAction,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
@@ -16,40 +23,47 @@ export interface IProduct {
 
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
-  const [tableData, setTableData] = useState<IProduct[]>([
-    {
-      "productKey": "123",
-      "name": "Tata car",
-      "seoTitle": "test title",
-      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-    },
-    {
-      "productKey": "567",
-      "name": "Tesla car",
-      "seoTitle": "test title",
-      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-    },
-
-    {
-      "productKey": "248",
-      "name": "Tata car",
-      "seoTitle": "test title",
-      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-    },
-    {
-      "productKey": "789",
-      "name": "Tesla car",
-      "seoTitle": "test title",
-      "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-    }
-  ]);
 
   const [search, setSearch] = useState('');
+  const [editableRow, setEditableRow] = useState('');
 
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
   const gridStyle = useMemo(() => ({ height: '70vh', width: '100%' }), []);
+  const gridRef = useRef<AgGridReact>(null);
 
   const { getAllProductsData } = useProducts();
+
+  const [tableData, setTableData] = useState<IProduct[]>([
+    {
+      productKey: '123',
+      name: 'Tata car',
+      seoTitle: 'test title',
+      seoDescription:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    },
+    {
+      productKey: '567',
+      name: 'Tesla car',
+      seoTitle: 'test title',
+      seoDescription:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    },
+
+    {
+      productKey: '248',
+      name: 'Tata car',
+      seoTitle: 'test title',
+      seoDescription:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    },
+    {
+      productKey: '789',
+      name: 'Tesla car',
+      seoTitle: 'test title',
+      seoDescription:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    },
+  ]);
   const [colDefs, setColDefs] = useState([
     {
       field: 'productKey',
@@ -61,11 +75,20 @@ const TableContainer = () => {
       field: 'seoTitle',
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
+      // editable: (params) => params.data.seoTitle == editableRow,
+      editable: true
     },
     {
       field: 'seoDescription',
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
+      // editable: (params) => params.data.productKey == editableRow,
+      editable: true,
+      cellEditor: "agLargeTextCellEditor",
+      cellEditorPopup: true,
+      cellEditorParams: {
+        maxLength: 5000
+    }
     },
     {
       headerName: 'Actions',
@@ -105,18 +128,21 @@ const TableContainer = () => {
     const productsData = async () => {
       try {
         const productsName = await getAllProductsData();
-        console.log(productsName)
         setTableData(productsName);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     };
     productsData();
   }, []);
-
-  const handleUpdate = (data: any) => {
-    console.log(data.value);
-    alert('Functionality not yet implemented');
+  // const onBtStopEditing = useCallback(() => {
+  //   gridRef.current!.api.stopEditing();
+  // }, []);
+  const handleUpdate = (props: any) => {
+    // props.api.startEditingCell({
+    //   rowIndex: props.node.rowIndex!,
+    //   colKey: props.column!.getId(),
+    // });
   };
   const onGridReady = (params: SetStateAction<null>) => {
     setGridApi(params);
@@ -125,11 +151,14 @@ const TableContainer = () => {
   const defaultColDef = useMemo(() => {
     return {
       flex: 1,
-
+      // editable: true,
       tooltipComponent: CustomTooltip,
     };
   }, []);
-
+  const getRowId = useCallback((params) => {
+    console.log(params);
+    return params.data.id;
+  }, []);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <Text.Headline as="h1">
@@ -154,14 +183,17 @@ const TableContainer = () => {
         >
           <div style={gridStyle}>
             <AgGridReact
+              ref={gridRef}
+              //   getRowId={getRowId}
               rowData={tableData as any}
-              columnDefs={colDefs}
+              columnDefs={colDefs as any}
               defaultColDef={defaultColDef}
               onGridReady={onGridReady as any}
               rowSelection={'multiple'}
               suppressRowClickSelection={true}
-              tooltipShowDelay={500}
+              tooltipShowDelay={1000}
               tooltipInteraction={true}
+              // suppressClickEdit={true}
             />
           </div>
         </div>
