@@ -5,8 +5,8 @@
     outline: none;
     padding:6px;
     border-radius: 4px;
-    border: 2px solid grey;
-    background-color: #f9f9f9;
+    border: 2px solid #2196f3;
+    background-color: white;
     resize: vertical;
     scrollbar-width: none;
 }
