@@ -14,6 +14,7 @@ import { SearchTextInput } from '@commercetools-frontend/ui-kit';
 import Text from '@commercetools-uikit/text';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import { useProducts } from '../../scripts/useProducts/useProducts';
+import { SimpleTextEditor } from '../SimpleTextEditor/SimpleTextEditor';
 export interface IProduct {
   productKey: string;
   name: string;
@@ -84,11 +85,11 @@ const TableContainer = () => {
       tooltipValueGetter: (p: { value: any }) => p.value,
       // editable: (params) => params.data.productKey == editableRow,
       editable: true,
-      cellEditor: "agLargeTextCellEditor",
+      cellEditor: SimpleTextEditor,
       cellEditorPopup: true,
-      cellEditorParams: {
-        maxLength: 5000
-    }
+    //   cellEditorParams: {
+    //     maxLength: 5000
+    // }
     },
     {
       headerName: 'Actions',
@@ -193,6 +194,7 @@ const TableContainer = () => {
               suppressRowClickSelection={true}
               tooltipShowDelay={1000}
               tooltipInteraction={true}
+              reactiveCustomComponents={true}
               // suppressClickEdit={true}
             />
           </div>
