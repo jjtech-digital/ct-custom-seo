@@ -1,6 +1,7 @@
 .mySimpleEditor {
     width: 18rem;
     height: 12rem;
+    font-family: 'IBM Plex Sans', sans-serif; 
     box-sizing: border-box;
     outline: none;
     padding:6px;
