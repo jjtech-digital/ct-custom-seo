@@ -15,6 +15,7 @@ import Text from '@commercetools-uikit/text';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import { useProducts } from '../../scripts/useProducts/useProducts';
 import { SimpleTextEditor } from '../SimpleTextEditor/SimpleTextEditor';
+
 export interface IProduct {
   productKey: string;
   name: string;
@@ -26,65 +27,45 @@ const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
 
   const [search, setSearch] = useState('');
-  const [editableRow, setEditableRow] = useState('');
 
   const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
   const gridStyle = useMemo(() => ({ height: '70vh', width: '100%' }), []);
   const gridRef = useRef<AgGridReact>(null);
 
   const { getAllProductsData } = useProducts();
-
-  const [tableData, setTableData] = useState<IProduct[]>([
-    {
-      productKey: '123',
-      name: 'Tata car',
-      seoTitle: 'test title',
-      seoDescription:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    },
-    {
-      productKey: '567',
-      name: 'Tesla car',
-      seoTitle: 'test title',
-      seoDescription:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    },
-
-    {
-      productKey: '248',
-      name: 'Tata car',
-      seoTitle: 'test title',
-      seoDescription:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    },
-    {
-      productKey: '789',
-      name: 'Tesla car',
-      seoTitle: 'test title',
-      seoDescription:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    },
-  ]);
+  const [originalTableData, setOriginalTableData] = useState<IProduct[]>([]);
+  const [tableData, setTableData] = useState<IProduct[]>([]);
 
   const [colDefs, setColDefs] = useState([
     {
-      field: 'productKey',
+      headerName: 'productKey',
       headerCheckboxSelection: true,
       checkboxSelection: true,
+      valueGetter: (p: any) => {
+        return p?.data?.key;
+      },
     },
-    { field: 'name' },
     {
-      field: 'seoTitle',
+      headerName: 'name',
+      valueGetter: (p: any) => {
+        return p?.data?.masterData?.current?.name;
+      },
+    },
+    {
+      headerName: 'seoTitle',
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
-      // editable: (params) => params.data.seoTitle == editableRow,
+      valueGetter: (p: any) => {
+        return p?.data?.masterData?.current?.description;
+      },
+
       editable: true,
     },
     {
       field: 'seoDescription',
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
-      // editable: (params) => params.data.productKey == editableRow,
+
       editable: true,
       cellEditor: SimpleTextEditor,
       cellEditorPopup: true,
@@ -101,7 +82,7 @@ const TableContainer = () => {
             <PrimaryButton
               size="small"
               label="Generate"
-              onClick={() => alert("Functionality not yet implemented")}
+              onClick={() => alert('functionality not yet implemented')}
               isDisabled={false}
             />
           </div>
@@ -109,7 +90,7 @@ const TableContainer = () => {
             <PrimaryButton
               size="small"
               label="Cancel"
-              onClick={() => alert("Functionality not yet implemented")}
+              onClick={() => alert('functionality not yet implemented')}
               isDisabled={false}
             />
           </div>
@@ -129,12 +110,12 @@ const TableContainer = () => {
   // const onBtStopEditing = useCallback(() => {
   //   gridRef.current!.api.stopEditing();
   // }, []);
-  const handleUpdate = (props: any) => {
-    // props.api.startEditingCell({
-    //   rowIndex: props.node.rowIndex!,
-    //   colKey: props.column!.getId(),
-    // });
-  };
+  // const handleUpdate = (props: any) => {
+  // props.api.startEditingCell({
+  //   rowIndex: props.node.rowIndex!,
+  //   colKey: props.column!.getId(),
+  // });
+  // };
   const onGridReady = (params: SetStateAction<null>) => {
     setGridApi(params?.api);
   };
@@ -169,20 +150,31 @@ const TableContainer = () => {
     [tableData]
   );
 
-  
+  // const onCancelClick = useCallback((rowIndex) => {
+  //   const rowDataCopy = [...originalTableData];
+  //   rowDataCopy[rowIndex] = { ...originalTableData[rowIndex] };
+  //   setTableData(rowDataCopy);
+  //   gridRef?.current!?.api?.stopEditing();
+  // },[originalTableData]
+  // );
+  //   const onCancelClick = (rowIndex) => {
+  //     gridRef?.current!?.api?.stopEditing();
+  //     gridRef?.current!?.api?.refreshCells({ rowNodes: [gridRef?.current!?.api?.getRowNode(rowIndex)] });
+  // };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const productsName = await getAllProductsData();
-  //       setTableData(productsName);
-  //       setOriginalTableData(productsName);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const productsName = await getAllProductsData();
+        setTableData(productsName?.data);
+        // setOriginalTableData(productsName);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <Text.Headline as="h1">
@@ -224,9 +216,21 @@ const TableContainer = () => {
           </div>
         </div>
       ) : (
-        <div>Loading...</div>
+        <div
+          style={{
+            width: '100%',
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          Loading...
+        </div>
       )}
     </div>
   );
 };
 export default TableContainer;
+// productProjectionSea
+// TProductProjectionSearchResult

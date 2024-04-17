@@ -9,7 +9,13 @@ const config = {
   cloudIdentifier: 'gcp-au',
   headers: {
     csp: {
-      'connect-src': ['http://localhost:4000/products'],
+      'connect-src': [
+        'https://ct-custom-seo-be.vercel.app/products',
+        'http://localhost:3002/products',
+        'https://auth.australia-southeast1.gcp.commercetools.com/oauth/token',
+        'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment',
+        'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment/product-projections',
+      ],
     },
   },
   env: {
@@ -17,8 +23,8 @@ const config = {
       initialProjectKey: 'ct-assessment',
     },
     production: {
-      applicationId:"${env:APPLICATION_ID}",
-      url:"${env:APP_URL}",
+      applicationId: '${env:APPLICATION_ID}',
+      url: '${env:APP_URL}',
     },
   },
   oAuthScopes: {
