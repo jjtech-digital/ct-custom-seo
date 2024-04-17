@@ -15,7 +15,7 @@ import Text from '@commercetools-uikit/text';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import { useProducts } from '../../scripts/useProducts/useProducts';
 import { SimpleTextEditor } from '../SimpleTextEditor/SimpleTextEditor';
-
+import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 export interface IProduct {
   productKey: string;
   name: string;
@@ -33,6 +33,15 @@ const TableContainer = () => {
   const gridRef = useRef<AgGridReact>(null);
 
   const { getAllProductsData } = useProducts();
+
+  const { dataLocale, projectLanguages } = useApplicationContext((context) => ({
+    dataLocale: context.dataLocale,
+    projectLanguages: context.project?.languages,
+  }));
+
+  const [region, setRegion] = useState(dataLocale);
+  const [shouldReload, setShouldReload] = useState(false);
+  const [currentDataLocale, setCurrentDataLocale] = useState(dataLocale);
   const [originalTableData, setOriginalTableData] = useState<IProduct[]>([]);
   const [tableData, setTableData] = useState<IProduct[]>([]);
 
@@ -48,7 +57,11 @@ const TableContainer = () => {
     {
       headerName: 'name',
       valueGetter: (p: any) => {
-        return p?.data?.masterData?.current?.name;
+        const productName = p?.data?.masterData?.current?.nameAllLocales.find(
+          (item: { locale: string }) => item.locale === region
+        );
+
+        return productName ? productName.value : '';
       },
     },
     {
@@ -161,19 +174,40 @@ const TableContainer = () => {
   //     gridRef?.current!?.api?.stopEditing();
   //     gridRef?.current!?.api?.refreshCells({ rowNodes: [gridRef?.current!?.api?.getRowNode(rowIndex)] });
   // };
+  useEffect(() => {
+    setRegion(currentDataLocale);
+    if (shouldReload) {
+      window.location.reload();
+    }
+  }, [currentDataLocale, shouldReload]);
+  
+  // Effect to detect changes in dataLocale and update currentDataLocale
+  useEffect(() => {
+    if (dataLocale !== currentDataLocale) {
+      setCurrentDataLocale(dataLocale);
+      setShouldReload(true);
+    }
+  }, [dataLocale, currentDataLocale]);
+  
+  // Reset shouldReload to false after reload
+  useEffect(() => {
+    if (shouldReload) {
+      setShouldReload(false);
+    }
+  }, [shouldReload]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productsName = await getAllProductsData();
-        setTableData(productsName?.data);
-        // setOriginalTableData(productsName);
+        const productsData = await getAllProductsData();
+        setTableData(productsData?.data);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, []);
+  }, [region, dataLocale]);
+ 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
