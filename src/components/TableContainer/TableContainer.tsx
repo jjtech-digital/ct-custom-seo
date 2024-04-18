@@ -39,10 +39,6 @@ const TableContainer = () => {
     projectLanguages: context.project?.languages,
   }));
 
-  const [region, setRegion] = useState(dataLocale);
-  const [shouldReload, setShouldReload] = useState(false);
-  const [currentDataLocale, setCurrentDataLocale] = useState(dataLocale);
-  const [originalTableData, setOriginalTableData] = useState<IProduct[]>([]);
   const [tableData, setTableData] = useState<IProduct[]>([]);
 
   const [colDefs, setColDefs] = useState([
@@ -56,12 +52,9 @@ const TableContainer = () => {
     },
     {
       headerName: 'name',
-      valueGetter: (p: any) => {
-        const productName = p?.data?.masterData?.current?.nameAllLocales.find(
-          (item: { locale: string }) => item.locale === region
-        );
-
-        return productName ? productName.value : '';
+      valueGetter: (params) => {
+        // Access data based on dataLocale
+        return params.data?.masterData?.current?.nameAllLocales?.[0]?.value;
       },
     },
     {
@@ -141,7 +134,7 @@ const TableContainer = () => {
     };
   }, []);
   // const getRowId = useCallback((params) => {
-  //   console.log(params);
+
   //   return params?.data?.id;
   // }, []);
   // const onCellDoubleClick = (event) => {
@@ -174,40 +167,35 @@ const TableContainer = () => {
   //     gridRef?.current!?.api?.stopEditing();
   //     gridRef?.current!?.api?.refreshCells({ rowNodes: [gridRef?.current!?.api?.getRowNode(rowIndex)] });
   // };
-  useEffect(() => {
-    setRegion(currentDataLocale);
-    if (shouldReload) {
-      window.location.reload();
-    }
-  }, [currentDataLocale, shouldReload]);
-  
-  // Effect to detect changes in dataLocale and update currentDataLocale
-  useEffect(() => {
-    if (dataLocale !== currentDataLocale) {
-      setCurrentDataLocale(dataLocale);
-      setShouldReload(true);
-    }
-  }, [dataLocale, currentDataLocale]);
-  
-  // Reset shouldReload to false after reload
-  useEffect(() => {
-    if (shouldReload) {
-      setShouldReload(false);
-    }
-  }, [shouldReload]);
 
   useEffect(() => {
+    setTableData([]);
     const fetchData = async () => {
       try {
         const productsData = await getAllProductsData();
-        setTableData(productsData?.data);
+        const filteredData = productsData?.data?.map((product) => {
+          const nameInCurrentLocale =
+            product?.masterData?.current?.nameAllLocales?.find(
+              (item) => item?.locale === dataLocale
+            );
+          return {
+            ...product,
+            masterData: {
+              ...product?.masterData,
+              current: {
+                ...product?.masterData?.current,
+                nameAllLocales: [nameInCurrentLocale],
+              },
+            },
+          };
+        });
+        setTableData(filteredData);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, [region, dataLocale]);
- 
+  }, [dataLocale]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -244,6 +232,7 @@ const TableContainer = () => {
               tooltipShowDelay={1000}
               tooltipInteraction={true}
               reactiveCustomComponents={true}
+
               // onCellDoubleClick={onCellDoubleClick}
               // suppressClickEdit={true}
             />
