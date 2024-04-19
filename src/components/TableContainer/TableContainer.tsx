@@ -16,6 +16,8 @@ import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import { useProducts } from '../../scripts/useProducts/useProducts';
 import { SimpleTextEditor } from '../SimpleTextEditor/SimpleTextEditor';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
+import { Pagination } from '@commercetools-uikit/pagination';
+import { usePaginationState } from '@commercetools-uikit/hooks';
 export interface IProduct {
   productKey: string;
   name: string;
@@ -25,25 +27,24 @@ export interface IProduct {
 
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
-
   const [search, setSearch] = useState('');
-
-  const containerStyle = useMemo(() => ({ width: '100%', height: '100%' }), []);
-  const gridStyle = useMemo(() => ({ height: '70vh', width: '100%' }), []);
+  const [tableData, setTableData] = useState<IProduct[]>([]);
+  const [fetchedData, setFetchedData] = useState(null);
   const gridRef = useRef<AgGridReact>(null);
+  const gridStyle = useMemo(() => ({ width: '100%', height: '65vh' }), []);
 
-  const { getAllProductsData } = useProducts();
-
-  const { dataLocale, projectLanguages } = useApplicationContext((context) => ({
+  const { dataLocale } = useApplicationContext((context) => ({
     dataLocale: context.dataLocale,
     projectLanguages: context.project?.languages,
   }));
 
-  const [tableData, setTableData] = useState<IProduct[]>([]);
+  const { page, perPage } = usePaginationState();
+  const { getAllProductsData } = useProducts();
+  const offSet = (page?.value - 1) * perPage?.value;
 
   const [colDefs, setColDefs] = useState([
     {
-      headerName: 'productKey',
+      field: 'productKey',
       headerCheckboxSelection: true,
       checkboxSelection: true,
       valueGetter: (p: any) => {
@@ -51,24 +52,27 @@ const TableContainer = () => {
       },
     },
     {
-      headerName: 'name',
-      valueGetter: (params) => {
+      field: 'name',
+      valueGetter: (params: any) => {
         // Access data based on dataLocale
         return params.data?.masterData?.current?.nameAllLocales?.[0]?.value;
       },
     },
     {
-      headerName: 'seoTitle',
+      field: 'seoTitle',
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
-      valueGetter: (p: any) => {
-        return p?.data?.masterData?.current?.description;
+      valueGetter: (params: any) => {
+        return params?.data?.masterData?.current?.description;
       },
 
       editable: true,
     },
     {
       field: 'seoDescription',
+      valueGetter: (params: any) => {
+        return params.data?.masterData?.current?.description;
+      },
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
 
@@ -133,10 +137,11 @@ const TableContainer = () => {
       tooltipComponent: CustomTooltip,
     };
   }, []);
-  // const getRowId = useCallback((params) => {
 
+  // const getRowId = useCallback((params) => {
   //   return params?.data?.id;
   // }, []);
+
   // const onCellDoubleClick = (event) => {
   //   if (event?.column?.colId === 'seoDescription') {
   //     const rowIndex = event?.rowIndex;
@@ -172,34 +177,44 @@ const TableContainer = () => {
     setTableData([]);
     const fetchData = async () => {
       try {
-        const productsData = await getAllProductsData();
-        const filteredData = productsData?.data?.map((product) => {
-          const nameInCurrentLocale =
-            product?.masterData?.current?.nameAllLocales?.find(
-              (item) => item?.locale === dataLocale
-            );
-          return {
-            ...product,
-            masterData: {
-              ...product?.masterData,
-              current: {
-                ...product?.masterData?.current,
-                nameAllLocales: [nameInCurrentLocale],
+        const productsData = await getAllProductsData(Number(perPage?.value), Number(offSet));
+        const filteredData = productsData?.data?.map(
+          (product: { masterData: { current: { nameAllLocales: any[] } } }) => {
+            const nameInCurrentLocale =
+              product?.masterData?.current?.nameAllLocales?.find(
+                (item) => item?.locale === dataLocale
+              );
+            return {
+              ...product,
+              masterData: {
+                ...product?.masterData,
+                current: {
+                  ...product?.masterData?.current,
+                  nameAllLocales: [nameInCurrentLocale],
+                },
               },
-            },
-          };
-        });
+            };
+          }
+        );
+        setFetchedData(productsData);
         setTableData(filteredData);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-  }, [dataLocale]);
+  }, [dataLocale, offSet, perPage?.value]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <Text.Headline as="h1">
+    <div
+      style={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+      }}
+    >
+      <Text.Headline as="h2">
         {'Generate SEO title and description'}
       </Text.Headline>
       <div style={{ width: '40%' }}>
@@ -216,8 +231,8 @@ const TableContainer = () => {
       {!!tableData?.length && tableData.length > 0 ? (
         <div
           className="ag-theme-quartz"
-          // style={{ width: '100%', height: '80vh' }}
-          style={containerStyle}
+          style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+          // style={containerStyle}
         >
           <div style={gridStyle}>
             <AgGridReact
@@ -237,6 +252,13 @@ const TableContainer = () => {
               // suppressClickEdit={true}
             />
           </div>
+          <Pagination
+            page={page?.value}
+            onPageChange={page?.onChange}
+            perPage={perPage?.value}
+            onPerPageChange={perPage?.onChange}
+            totalItems={fetchedData?.total}
+          />
         </div>
       ) : (
         <div
