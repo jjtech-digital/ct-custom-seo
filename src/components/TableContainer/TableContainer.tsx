@@ -58,29 +58,28 @@ const TableContainer = () => {
     {
       field: 'name',
       valueGetter: (params: any) => {
-        // Access data based on dataLocale
         return params.data?.masterData?.current?.nameAllLocales?.[0]?.value;
       },
     },
     {
-      field: 'seoTitle',
+      headerName: 'SEO Title',
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
         return params?.data?.masterData?.current?.description;
       },
-
+      sortable: false,
       editable: true,
     },
     {
-      field: 'seoDescription',
+      headerName: 'SEO Description',
       valueGetter: (params: any) => {
         return params.data?.masterData?.current?.description;
       },
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
-
       editable: true,
+      sortable: false,
       cellEditor: SimpleTextEditor,
       cellEditorPopup: true,
       //   cellEditorParams: {
@@ -90,6 +89,7 @@ const TableContainer = () => {
     {
       headerName: 'Actions',
       field: 'productKey',
+      sortable: false,
       cellRenderer: (params: any) => (
         <div style={{ display: 'flex' }}>
           <div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavItems } from './Settings.types';
 import SettingsRulesData from './SettingsRulesData';
-import SettingsOpenAiData from './SettingsOpenAIData';
+import SettingsOpenAiData from './SettingsOpenAiData';
 import SettingsAwsData from './SettingsAwsData';
 import SettingsGoogleAiData from './SettingsGoogleAiData';
 
