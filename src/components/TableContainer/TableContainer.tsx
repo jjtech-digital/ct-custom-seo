@@ -18,6 +18,9 @@ import { SimpleTextEditor } from '../SimpleTextEditor/SimpleTextEditor';
 import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 import { Pagination } from '@commercetools-uikit/pagination';
 import { usePaginationState } from '@commercetools-uikit/hooks';
+import { GearIcon } from '@commercetools-uikit/icons';
+import { Link, useRouteMatch } from 'react-router-dom';
+
 export interface IProduct {
   productKey: string;
   name: string;
@@ -40,6 +43,7 @@ const TableContainer = () => {
 
   const { page, perPage } = usePaginationState();
   const { getAllProductsData } = useProducts();
+  const match = useRouteMatch();
   const offSet = (page?.value - 1) * perPage?.value;
 
   const [colDefs, setColDefs] = useState([
@@ -177,7 +181,10 @@ const TableContainer = () => {
     setTableData([]);
     const fetchData = async () => {
       try {
-        const productsData = await getAllProductsData(Number(perPage?.value), Number(offSet));
+        const productsData = await getAllProductsData(
+          Number(perPage?.value),
+          Number(offSet)
+        );
         const filteredData = productsData?.data?.map(
           (product: { masterData: { current: { nameAllLocales: any[] } } }) => {
             const nameInCurrentLocale =
@@ -217,16 +224,21 @@ const TableContainer = () => {
       <Text.Headline as="h2">
         {'Generate SEO title and description'}
       </Text.Headline>
-      <div style={{ width: '40%' }}>
-        <SearchTextInput
-          placeholder="Search by Product key, Name, Seo title or Seo description "
-          value={search}
-          onChange={(event: { target: { value: SetStateAction<string> } }) =>
-            setSearch(event.target.value)
-          }
-          onSubmit={() => alert(search)}
-          isClearable={false}
-        />
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ width: '40%', display: 'flex' }}>
+          <SearchTextInput
+            placeholder="Search by Product key, Name, Seo title or Seo description "
+            value={search}
+            onChange={(event: { target: { value: SetStateAction<string> } }) =>
+              setSearch(event.target.value)
+            }
+            onSubmit={() => alert(search)}
+            isClearable={false}
+          />
+        </div>
+        <Link to={`${match.url}/settings`} style={{width:"35px",cursor: 'pointer'}}>
+          <GearIcon size="scale" color='primary40'/>
+        </Link>
       </div>
       {!!tableData?.length && tableData.length > 0 ? (
         <div
