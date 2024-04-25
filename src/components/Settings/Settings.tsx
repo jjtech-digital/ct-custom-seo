@@ -10,9 +10,15 @@ import SettingsData from '../SettingsData/SettingsData';
 import { useState } from 'react';
 import { settingsNavMock } from '../SettingsData/Settings.mock';
 
+export interface ISelectedPageProps{
+    title: string
+    isDefaultSelected: boolean
+    name: string
+}
+
 const Settings = (props: { linkToProducts: any }) => {
   const intl = useIntl();
-  const [selectedPage, setSelectedPage] = useState(settingsNavMock);
+  const [selectedPage, setSelectedPage] = useState<ISelectedPageProps[]>(settingsNavMock);
   const defaultPage = selectedPage?.find((item) => item.isDefaultSelected);
   return (
     <Spacings.Stack scale="xl">

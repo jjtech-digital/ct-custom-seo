@@ -1,0 +1,32 @@
+.tableContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px
+}
+
+.tableSearchSection {
+  display: flex;
+  justify-content: space-between
+}
+
+.searchBar {
+  width: 40%;
+  display: flex
+}
+
+.settingIcon {
+  width: 35px;
+}
+
+.settingIcon:hover {
+  cursor: 'pointer'
+}
+
+.loaderContainer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center
+}

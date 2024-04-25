@@ -1,9 +1,8 @@
-import React from 'react';
 import ViewSwitcher from '@commercetools-uikit/view-switcher';
+
 const SettingsHeader = ({ defaultPage, selectedPage, setSelectedPage }) => {
-
-
-  const menuToggleHandler = (pageName) => {
+  
+  const menuToggleHandler = (pageName:string) => {
     const updatedActivePages = selectedPage.map((navMenu) => {
       if (navMenu.name === pageName) {
         return {

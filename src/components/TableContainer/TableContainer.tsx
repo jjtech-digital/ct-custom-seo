@@ -20,19 +20,21 @@ import { Pagination } from '@commercetools-uikit/pagination';
 import { usePaginationState } from '@commercetools-uikit/hooks';
 import { GearIcon } from '@commercetools-uikit/icons';
 import { Link, useRouteMatch } from 'react-router-dom';
-
-export interface IProduct {
-  productKey: string;
-  name: string;
-  seoTitle: string;
-  seoDescription: string;
-}
-
+import { IFetchrawData, IProduct, IResponseFromAi } from './TableContainer.types';
+import { descriptionPattern, titlePattern } from '../../constants';
+import styles from './TableContainer.module.css';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
   const [search, setSearch] = useState('');
   const [tableData, setTableData] = useState<IProduct[]>([]);
-  const [fetchedData, setFetchedData] = useState(null);
+  const [fetchedData, setFetchedData] = useState<IFetchrawData>();
+  const [responseFromAi, setResponseFromAi] = useState<IResponseFromAi>({
+    id: null,
+    title: null,
+    description: null,
+  });
+
   const gridRef = useRef<AgGridReact>(null);
   const gridStyle = useMemo(() => ({ width: '100%', height: '65vh' }), []);
 
@@ -42,7 +44,8 @@ const TableContainer = () => {
   }));
 
   const { page, perPage } = usePaginationState();
-  const { getAllProductsData } = useProducts();
+  const { getAllProductsData, getSeoMetaData } = useProducts();
+
   const match = useRouteMatch();
   const offSet = (page?.value - 1) * perPage?.value;
 
@@ -96,7 +99,7 @@ const TableContainer = () => {
             <PrimaryButton
               size="small"
               label="Generate"
-              onClick={() => alert('functionality not yet implemented')}
+              onClick={() => onGenerateClick(params)}
               isDisabled={false}
             />
           </div>
@@ -130,7 +133,7 @@ const TableContainer = () => {
   //   colKey: props.column!.getId(),
   // });
   // };
-  const onGridReady = (params: SetStateAction<null>) => {
+  const onGridReady = (params: { api: SetStateAction<null>; }) => {
     setGridApi(params?.api);
   };
 
@@ -141,6 +144,25 @@ const TableContainer = () => {
       tooltipComponent: CustomTooltip,
     };
   }, []);
+
+  const onGenerateClick = async (params: any) => {
+    const aiResponse = await getSeoMetaData(
+      params?.data?.masterData?.current?.nameAllLocales?.[0]?.value
+    );
+    let metaData = aiResponse?.choices?.[0]?.message?.content;
+
+    const titleMatch = metaData?.match(titlePattern);
+    const title = titleMatch ? titleMatch[2].trim() : null;
+
+    const descriptionMatch = metaData?.match(descriptionPattern);
+    const description = descriptionMatch ? descriptionMatch[2].trim() : null;
+
+    setResponseFromAi({
+      id: params.data.id,
+      title: title,
+      description: description,
+    });
+  };
 
   // const getRowId = useCallback((params) => {
   //   return params?.data?.id;
@@ -212,20 +234,32 @@ const TableContainer = () => {
     fetchData();
   }, [dataLocale, offSet, perPage?.value]);
 
+  useEffect(() => {
+    if (
+      responseFromAi?.id &&
+      responseFromAi?.title &&
+      responseFromAi?.description
+    ) {
+      const updatedTableData = [...tableData];
+      const index = updatedTableData.findIndex(
+        (item) => item.id === responseFromAi.id
+      );
+      if (index !== -1) {
+        updatedTableData[index].masterData.current.description =
+          responseFromAi.description;
+        updatedTableData[index].masterData.current.title = responseFromAi.title;
+        setTableData(updatedTableData);
+      }
+    }
+  }, [responseFromAi]);
+
   return (
-    <div
-      style={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-      }}
-    >
+    <div className={`${styles.tableContainer}`}>
       <Text.Headline as="h2">
         {'Generate SEO title and description'}
       </Text.Headline>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ width: '40%', display: 'flex' }}>
+      <div className={`${styles.tableSearchSection}`}>
+        <div className={`${styles.searchBar}`}>
           <SearchTextInput
             placeholder="Search by Product key, Name, Seo title or Seo description "
             value={search}
@@ -233,11 +267,12 @@ const TableContainer = () => {
               setSearch(event.target.value)
             }
             onSubmit={() => alert(search)}
-            isClearable={false}
+            onReset={() => setSearch('')}
+            // isClearable={false}
           />
         </div>
-        <Link to={`${match.url}/settings`} style={{width:"35px",cursor: 'pointer'}}>
-          <GearIcon size="scale" color='primary40'/>
+        <Link to={`${match.url}/settings`} className={`${styles.settingIcon}`}>
+          <GearIcon size="scale" color="primary40" />
         </Link>
       </div>
       {!!tableData?.length && tableData.length > 0 ? (
@@ -273,16 +308,9 @@ const TableContainer = () => {
           />
         </div>
       ) : (
-        <div
-          style={{
-            width: '100%',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          Loading...
+        <div className={`${styles.loaderContainer}`}>
+          {' '}
+          <LoadingSpinner /> Loading...
         </div>
       )}
     </div>
