@@ -11,8 +11,6 @@ export const generateSeoMetaData = async (productName: any) => {
       body,
       {
         headers: {
-          'Access-Control-Allow-Origin': '*', 
-          'Access-Control-Allow-Headers': '*',
           'Content-Type': 'application/json',
         },
       }
