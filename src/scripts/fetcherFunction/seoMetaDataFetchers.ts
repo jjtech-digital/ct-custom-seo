@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { apiBaseUrl } from '../../constants';
 
 export const generateSeoMetaData = async (productName: any) => {
   const body = {
@@ -6,7 +7,7 @@ export const generateSeoMetaData = async (productName: any) => {
   };
   try {
     const response = await axios.post(
-      `https://ct-custom-seo-be.vercel.app/products/generate-meta-data`,
+      `${apiBaseUrl}/products/generate-meta-data`,
       body,
       {
         headers: {
