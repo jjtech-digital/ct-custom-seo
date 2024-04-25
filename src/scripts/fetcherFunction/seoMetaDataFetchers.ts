@@ -3,7 +3,7 @@ import { apiBaseUrl } from '../../constants';
 
 export const generateSeoMetaData = async (productName: any) => {
   const body = {
-    query: productName
+    query: productName,
   };
   try {
     const response = await axios.post(
@@ -11,6 +11,8 @@ export const generateSeoMetaData = async (productName: any) => {
       body,
       {
         headers: {
+          'Access-Control-Allow-Origin': '*', 
+          'Access-Control-Allow-Headers': '*',
           'Content-Type': 'application/json',
         },
       }
@@ -19,6 +21,6 @@ export const generateSeoMetaData = async (productName: any) => {
     return response?.data?.data;
   } catch (error) {
     console.error('Error generating SEO metadata:', error);
-    return null; 
+    return null;
   }
 };
