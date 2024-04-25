@@ -12,12 +12,10 @@ const config = {
       'connect-src': [
         'https://ct-custom-seo-be.vercel.app/products',
         'http://localhost:3002/products/generate-meta-data',
-        'http://ct-custom-seo-be.vercel.app/products/generate-meta-data',
         'https://ct-custom-seo-be.vercel.app/products/generate-meta-data',
         'https://auth.australia-southeast1.gcp.commercetools.com/oauth/token',
         'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment',
-        'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment/product-projections',
-        ,
+        'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment/product-projections',,
       ],
     },
   },
