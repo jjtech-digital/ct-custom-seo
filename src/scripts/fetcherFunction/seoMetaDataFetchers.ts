@@ -1,14 +1,23 @@
-import OpenAI from 'openai';
+import axios from 'axios';
 
-const openai = new OpenAI({
-  apiKey: "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",
-  dangerouslyAllowBrowser: true,
-});
+export const generateSeoMetaData = async (productName: any) => {
+  const body = {
+    query: productName
+  };
+  try {
+    const response = await axios.post(
+      `https://ct-custom-seo-be.vercel.app/products/generate-meta-data`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
-export const generateSeoMetaData = async (productName:string) => {
-  const chatCompletion = await openai.chat.completions.create({
-    messages: [{ role: 'user', content: `Generate seo Title and seo Description for product ${productName}` }],
-    model: "gpt-3.5-turbo",
-  });
-  return chatCompletion;
+    return response?.data?.data;
+  } catch (error) {
+    console.error('Error generating SEO metadata:', error);
+    return null; 
+  }
 };
