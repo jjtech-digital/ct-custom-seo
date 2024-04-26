@@ -52,6 +52,9 @@ const TableContainer = () => {
   const [colDefs, setColDefs] = useState([
     {
       field: 'productKey',
+      flex:1.5,
+      minWidth:140,
+      maxWidth:160,
       headerCheckboxSelection: true,
       checkboxSelection: true,
       valueGetter: (p: any) => {
@@ -60,27 +63,30 @@ const TableContainer = () => {
     },
     {
       field: 'name',
+      flex:3.5,
       valueGetter: (params: any) => {
         return params.data?.masterData?.current?.nameAllLocales?.[0]?.value;
       },
     },
     {
       headerName: 'SEO Title',
+      flex:4,
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
         return params?.data?.masterData?.current?.description;
       },
-      sortable: false,
       editable: true,
+      sortable: false,
     },
     {
       headerName: 'SEO Description',
+      flex:4,
+      tooltipComponentParams: { color: '#f9f5f5' },
+      tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
         return params.data?.masterData?.current?.description;
       },
-      tooltipComponentParams: { color: '#f9f5f5' },
-      tooltipValueGetter: (p: { value: any }) => p.value,
       editable: true,
       sortable: false,
       cellEditor: SimpleTextEditor,
@@ -92,6 +98,8 @@ const TableContainer = () => {
     {
       headerName: 'Actions',
       field: 'productKey',
+      flex:2.5,
+      minWidth:280,
       sortable: false,
       cellRenderer: (params: any) => (
         <div style={{ display: 'flex' }}>
