@@ -52,9 +52,9 @@ const TableContainer = () => {
   const [colDefs, setColDefs] = useState([
     {
       field: 'productKey',
-      flex:1.5,
+      flex:1,
       minWidth:140,
-      maxWidth:160,
+     
       headerCheckboxSelection: true,
       checkboxSelection: true,
       valueGetter: (p: any) => {
