@@ -308,11 +308,12 @@ const TableContainer = () => {
             />
           </div>
           <Pagination
+            totalItems={fetchedData?.total || 0}
             page={page?.value}
             onPageChange={page?.onChange}
             perPage={perPage?.value}
             onPerPageChange={perPage?.onChange}
-            totalItems={fetchedData?.total}
+            perPageRange={'m'}
           />
         </div>
       ) : (
