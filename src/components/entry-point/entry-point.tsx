@@ -5,6 +5,7 @@ import {
 } from '@commercetools-frontend/application-shell';
 import type { ApplicationWindow } from '@commercetools-frontend/constants';
 import loadMessages from '../../load-messages';
+import { AppContextProvider } from '../../context/AppContext';
 
 declare let window: ApplicationWindow;
 
@@ -20,13 +21,15 @@ const AsyncApplicationRoutes = lazy(
 setupGlobalErrorListener();
 
 const EntryPoint = () => (
-  <ApplicationShell
-    enableReactStrictMode
-    environment={window.app}
-    applicationMessages={loadMessages}
-  >
-    <AsyncApplicationRoutes />
-  </ApplicationShell>
+  <AppContextProvider>
+    <ApplicationShell
+      enableReactStrictMode
+      environment={window.app}
+      applicationMessages={loadMessages}
+    >
+      <AsyncApplicationRoutes />
+    </ApplicationShell>
+  </AppContextProvider>
 );
 EntryPoint.displayName = 'EntryPoint';
 

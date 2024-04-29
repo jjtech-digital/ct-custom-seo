@@ -20,10 +20,15 @@ import { Pagination } from '@commercetools-uikit/pagination';
 import { usePaginationState } from '@commercetools-uikit/hooks';
 import { GearIcon } from '@commercetools-uikit/icons';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { IFetchrawData, IProduct, IResponseFromAi } from './TableContainer.types';
+import {
+  IFetchrawData,
+  IProduct,
+  IResponseFromAi,
+} from './TableContainer.types';
 import { descriptionPattern, titlePattern } from '../../constants';
 import styles from './TableContainer.module.css';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+import { useAppContext } from '../../context/AppContext';
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
   const [search, setSearch] = useState('');
@@ -45,16 +50,22 @@ const TableContainer = () => {
 
   const { page, perPage } = usePaginationState();
   const { getAllProductsData, getSeoMetaData } = useProducts();
-
+  const { state, setState } = useAppContext();
   const match = useRouteMatch();
   const offSet = (page?.value - 1) * perPage?.value;
+
+  const overlayLoadingTemplate = `
+  <p aria-live="polite" aria-atomic="true" class="${styles.loadingOverlay}" aria-label="loading">
+    Generating meta data<span class="${styles.loadingDots}">...</span>
+  </p>
+`;
 
   const [colDefs, setColDefs] = useState([
     {
       field: 'productKey',
-      flex:1,
-      minWidth:140,
-     
+      flex: 1,
+      minWidth: 140,
+
       headerCheckboxSelection: true,
       checkboxSelection: true,
       valueGetter: (p: any) => {
@@ -63,14 +74,14 @@ const TableContainer = () => {
     },
     {
       field: 'name',
-      flex:3.5,
+      flex: 3.5,
       valueGetter: (params: any) => {
         return params.data?.masterData?.current?.nameAllLocales?.[0]?.value;
       },
     },
     {
       headerName: 'SEO Title',
-      flex:4,
+      flex: 4,
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
@@ -81,7 +92,7 @@ const TableContainer = () => {
     },
     {
       headerName: 'SEO Description',
-      flex:4,
+      flex: 4,
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
@@ -98,8 +109,8 @@ const TableContainer = () => {
     {
       headerName: 'Actions',
       field: 'productKey',
-      flex:2.5,
-      minWidth:280,
+      flex: 2.5,
+      minWidth: 280,
       sortable: false,
       cellRenderer: (params: any) => (
         <div style={{ display: 'flex' }}>
@@ -141,7 +152,7 @@ const TableContainer = () => {
   //   colKey: props.column!.getId(),
   // });
   // };
-  const onGridReady = (params: { api: SetStateAction<null>; }) => {
+  const onGridReady = (params: { api: SetStateAction<null> }) => {
     setGridApi(params?.api);
   };
 
@@ -154,6 +165,7 @@ const TableContainer = () => {
   }, []);
 
   const onGenerateClick = async (params: any) => {
+    gridRef.current!.api.showLoadingOverlay();
     const aiResponse = await getSeoMetaData(
       params?.data?.masterData?.current?.nameAllLocales?.[0]?.value
     );
@@ -170,6 +182,7 @@ const TableContainer = () => {
       title: title,
       description: description,
     });
+    gridRef.current!.api.hideOverlay();
   };
 
   // const getRowId = useCallback((params) => {
@@ -213,7 +226,8 @@ const TableContainer = () => {
       try {
         const productsData = await getAllProductsData(
           Number(perPage?.value),
-          Number(offSet)
+          Number(offSet),
+          setState
         );
         const filteredData = productsData?.data?.map(
           (product: { masterData: { current: { nameAllLocales: any[] } } }) => {
@@ -283,7 +297,7 @@ const TableContainer = () => {
           <GearIcon size="scale" color="primary40" />
         </Link>
       </div>
-      {!!tableData?.length && tableData.length > 0 ? (
+      {!state.pageLoading && !!tableData?.length && tableData.length > 0 ? (
         <div
           className="ag-theme-quartz"
           style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
@@ -302,7 +316,7 @@ const TableContainer = () => {
               tooltipShowDelay={1000}
               tooltipInteraction={true}
               reactiveCustomComponents={true}
-
+              overlayLoadingTemplate={overlayLoadingTemplate}
               // onCellDoubleClick={onCellDoubleClick}
               // suppressClickEdit={true}
             />
@@ -318,7 +332,6 @@ const TableContainer = () => {
         </div>
       ) : (
         <div className={`${styles.loaderContainer}`}>
-          {' '}
           <LoadingSpinner /> Loading...
         </div>
       )}
