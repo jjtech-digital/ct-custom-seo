@@ -184,7 +184,12 @@ const TableContainer = () => {
     });
     gridRef.current!.api.hideOverlay();
   };
-
+  const removeDoubleQuotes = (text: string) => {
+    if (text.startsWith('"') && text.endsWith('"')) {
+      return text.slice(1, -1);
+    }
+    return text;
+  };
   // const getRowId = useCallback((params) => {
   //   return params?.data?.id;
   // }, []);
@@ -267,9 +272,13 @@ const TableContainer = () => {
         (item) => item.id === responseFromAi.id
       );
       if (index !== -1) {
-        updatedTableData[index].masterData.current.title = JSON.parse(responseFromAi.title);
+        const cleanedTitle = removeDoubleQuotes(responseFromAi.title);
+        const cleanedDescription = removeDoubleQuotes(
+          responseFromAi.description
+        );
+        updatedTableData[index].masterData.current.title = cleanedTitle;
         updatedTableData[index].masterData.current.description =
-          JSON.parse(responseFromAi.description);
+          cleanedDescription;
         setTableData(updatedTableData);
       }
     }
