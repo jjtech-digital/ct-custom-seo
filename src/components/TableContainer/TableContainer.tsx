@@ -85,7 +85,7 @@ const TableContainer = () => {
       tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
-        return params?.data?.masterData?.current?.description;
+        return params?.data?.masterData?.current?.title;
       },
       editable: true,
       sortable: false,
@@ -267,9 +267,9 @@ const TableContainer = () => {
         (item) => item.id === responseFromAi.id
       );
       if (index !== -1) {
+        updatedTableData[index].masterData.current.title = JSON.parse(responseFromAi.title);
         updatedTableData[index].masterData.current.description =
-          responseFromAi.description;
-        updatedTableData[index].masterData.current.title = responseFromAi.title;
+          JSON.parse(responseFromAi.description);
         setTableData(updatedTableData);
       }
     }

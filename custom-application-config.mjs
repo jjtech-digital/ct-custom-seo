@@ -10,8 +10,10 @@ const config = {
   headers: {
     csp: {
       'connect-src': [
-        'https://ct-custom-seo-be.vercel.app/products',
+        'http://localhost:3002/rule/create-rules',
         'http://localhost:3002/products/generate-meta-data',
+        'https://ct-custom-seo-be.vercel.app/products',
+        'https://ct-custom-seo-be.vercel.app/rule/create-rules',
         'https://ct-custom-seo-be.vercel.app/products/generate-meta-data',
         'https://auth.australia-southeast1.gcp.commercetools.com/oauth/token',
         'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment',

@@ -4,15 +4,24 @@ import IconButton from '@commercetools-uikit/icon-button';
 import { PlusBoldIcon, CloseBoldIcon } from '@commercetools-uikit/icons';
 import styles from './Settings.module.css';
 import PrimaryButton from '@commercetools-uikit/primary-button';
+import SecondaryButton from '@commercetools-uikit/secondary-button';
+import { useSettings } from '../../scripts/useSettings/useSettings';
+import { useAppContext } from '../../context/AppContext';
+import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+import { ContentNotification } from '@commercetools-uikit/notifications';
+
 const SettingsRulesData = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const { createRuleshandler } = useSettings();
+  const { state, setState } = useAppContext();
   const { control, register, handleSubmit } = useForm();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'rulesContent',
   });
-
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (fields.length === 0) {
@@ -27,17 +36,33 @@ const SettingsRulesData = () => {
     setCurrentIndex(fields.length);
   };
 
-  const handleRemoveField = (index:number) => {
+  const handleRemoveField = (index: number) => {
     remove(index);
     setCurrentIndex(fields.length - 2);
   };
 
-  const onSubmit = (data: any, event: { preventDefault: () => void; }) => {
+  const onSubmit = async (data: any, event: { preventDefault: () => void }) => {
     event.preventDefault();
-   alert("check submitted data in console")
-    console.log("data",data);
+    try {
+      const response = await createRuleshandler(data, setState);
+      setSuccessMessage(response?.message);
+    } catch (error) {
+      console.log(error);
+    }
   };
-console.log(fields)
+  const handleNotificationDismiss = () => {
+    setSuccessMessage('');
+  };
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        handleNotificationDismiss();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
   return (
     <div>
       <form
@@ -45,10 +70,10 @@ console.log(fields)
         className={`${styles.gridRuleDataSection}`}
       >
         {fields.map((item, index) => (
-          <div  key={item.id}>
+          <div key={item.id}>
             <div className={`${styles.gridRuleInputContainer}`}>
               <input
-              className={`${styles.gridRuleInputStyle}`}
+                className={`${styles.gridRuleInputStyle}`}
                 {...register(`rulesContent.${index}.rulesInput`, {
                   required: 'Rules Content is required',
                 })}
@@ -71,10 +96,28 @@ console.log(fields)
           </div>
         ))}
         <div className={`${styles.ruleFormSubmitButton}`}>
-          <PrimaryButton label="Submit" type="submit" isDisabled={false} />
-          
+          {state?.isApiFetching ? (
+            <SecondaryButton
+              iconLeft={<LoadingSpinner />}
+              label="Submitting"
+              type="submit"
+              isDisabled={true}
+            />
+          ) : (
+            <PrimaryButton label="Submit" type="submit" />
+          )}
         </div>
       </form>
+      {successMessage && (
+        <div className={`${styles.notificationBottom}`}>
+          <ContentNotification
+            type="success"
+            onRemove={handleNotificationDismiss}
+          >
+            {successMessage}
+          </ContentNotification>
+        </div>
+      )}
     </div>
   );
 };
