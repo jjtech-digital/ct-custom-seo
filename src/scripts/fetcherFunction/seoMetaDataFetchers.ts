@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { apiBaseUrl } from '../../constants';
 
-export const generateSeoMetaData = async (productName: any) => {
+export const generateSeoMetaData = async (productId: string) => {
   const body = {
-    query: productName,
+    id: productId,
   };
   try {
     const response = await axios.post(

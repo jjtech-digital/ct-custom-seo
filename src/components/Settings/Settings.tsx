@@ -9,16 +9,12 @@ import SettingsHeader from '../SettingsHeader/SettingsHeader';
 import SettingsData from '../SettingsData/SettingsData';
 import { useState } from 'react';
 import { settingsNavMock } from '../SettingsData/Settings.mock';
-
-export interface ISelectedPageProps{
-    title: string
-    isDefaultSelected: boolean
-    name: string
-}
+import { ISelectedPageProps } from '../SettingsData/Settings.types';
 
 const Settings = (props: { linkToProducts: any }) => {
   const intl = useIntl();
-  const [selectedPage, setSelectedPage] = useState<ISelectedPageProps[]>(settingsNavMock);
+  const [selectedPage, setSelectedPage] =
+    useState<ISelectedPageProps[]>(settingsNavMock);
   const defaultPage = selectedPage?.find((item) => item.isDefaultSelected);
   return (
     <Spacings.Stack scale="xl">
@@ -36,7 +32,7 @@ const Settings = (props: { linkToProducts: any }) => {
         selectedPage={selectedPage}
         setSelectedPage={setSelectedPage}
       />
-      <SettingsData defaultPage={defaultPage} />
+      {defaultPage && <SettingsData defaultPage={defaultPage} />}
     </Spacings.Stack>
   );
 };

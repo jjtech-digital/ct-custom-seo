@@ -4,3 +4,9 @@ export enum NavItems {
   AWS = 'AWS',
   GOOGLEAI = 'Google AI',
 }
+
+export interface ISelectedPageProps {
+  title: string;
+  isDefaultSelected: boolean;
+  name: string;
+}

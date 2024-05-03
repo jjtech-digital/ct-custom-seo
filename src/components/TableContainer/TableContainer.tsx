@@ -167,7 +167,7 @@ const TableContainer = () => {
   const onGenerateClick = async (params: any) => {
     gridRef.current!.api.showLoadingOverlay();
     const aiResponse = await getSeoMetaData(
-      params?.data?.masterData?.current?.nameAllLocales?.[0]?.value
+      params?.data?.id
     );
     let metaData = aiResponse?.choices?.[0]?.message?.content;
 

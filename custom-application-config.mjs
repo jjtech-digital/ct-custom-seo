@@ -10,6 +10,7 @@ const config = {
   headers: {
     csp: {
       'connect-src': [
+        'http://localhost:3002/products',
         'http://localhost:3002/rule/create-rules',
         'http://localhost:3002/products/generate-meta-data',
         'https://ct-custom-seo-be.vercel.app/products',

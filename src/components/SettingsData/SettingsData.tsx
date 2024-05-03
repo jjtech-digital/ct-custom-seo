@@ -1,12 +1,12 @@
-import React from 'react';
-import { NavItems } from './Settings.types';
+import { ISelectedPageProps, NavItems } from './Settings.types';
 import SettingsRulesData from './SettingsRulesData';
 import SettingsOpenAiData from './SettingsOpenAiData';
 import SettingsAwsData from './SettingsAwsData';
 import SettingsGoogleAiData from './SettingsGoogleAiData';
-
-const SettingsData = ({ defaultPage }: any) => {
-  
+export interface ISetingDataProps {
+  defaultPage: ISelectedPageProps | undefined;
+}
+const SettingsData = ({ defaultPage }: ISetingDataProps) => {
   return (
     <div>
       {(() => {
