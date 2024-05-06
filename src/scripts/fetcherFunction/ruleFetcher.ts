@@ -10,15 +10,26 @@ export const createRules = async (payload: any, setState: Function) => {
   };
   try {
     setState((prev: any) => ({ ...prev, isApiFetching: true }));
-    const response = await axios.post(
-      `${apiBaseUrl}/rule/create-rules`,
-      body
-    );
+    const response = await axios.post(`${apiBaseUrl}/rule/create-rules`, body);
     setState((prev: any) => ({ ...prev, isApiFetching: false }));
     return response?.data;
   } catch (error) {
     setState((prev: any) => ({ ...prev, isApiFetching: false }));
     console.log(error);
+    return error;
+  }
+};
+export const getAllRules = async (accessToken: string) => {
+  try {
+    const response = await axios.get(`${apiBaseUrl}/rule/saved-rules`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return response?.data;
+  } catch (error) {
+    console.error('Error fetching all rules:', error);
     return error;
   }
 };

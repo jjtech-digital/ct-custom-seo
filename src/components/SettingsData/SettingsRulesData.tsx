@@ -14,7 +14,7 @@ const SettingsRulesData = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const { createRuleshandler } = useSettings();
+  const { createRuleshandler, getCtObjToken, getsavedRules } = useSettings();
   const { state, setState } = useAppContext();
   const { control, register, handleSubmit } = useForm();
 
@@ -53,6 +53,36 @@ const SettingsRulesData = () => {
   const handleNotificationDismiss = () => {
     setSuccessMessage('');
   };
+
+  useEffect(() => {
+    const storeToken = async () => {
+      try {
+        const token = await getCtObjToken();
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+      } catch (error) {
+        console.error('Error storing token:', error);
+      }
+    };
+
+    storeToken();
+  }, []);
+  useEffect(() => {
+    const accessToken = localStorage.getItem('token');
+  
+    const retrieveSavedRule = async () => {
+      try {
+        if (accessToken) {
+          const response = await getsavedRules(accessToken);
+          console.log(response);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    retrieveSavedRule();
+  }, []);
 
   useEffect(() => {
     if (successMessage) {
