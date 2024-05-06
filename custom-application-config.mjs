@@ -25,7 +25,7 @@ const config = {
   },
   env: {
     development: {
-      initialProjectKey: 'ct-assessment',
+      initialProjectKey: 'jj-seo-app',
     },
     production: {
       applicationId: '${env:APPLICATION_ID}',
