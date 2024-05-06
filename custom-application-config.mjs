@@ -11,11 +11,15 @@ const config = {
     csp: {
       'connect-src': [
         'http://localhost:3002/products',
-        'http://localhost:3002/rule/create-rules',
         'http://localhost:3002/products/generate-meta-data',
+        'http://localhost:3002/rule',
+        'http://localhost:3002/rule/create-rules',
+        'http://localhost:3002/rule/saved-rules',
         'https://ct-custom-seo-be.vercel.app/products',
-        'https://ct-custom-seo-be.vercel.app/rule/create-rules',
         'https://ct-custom-seo-be.vercel.app/products/generate-meta-data',
+        'https://ct-custom-seo-be.vercel.app/rule',
+        'https://ct-custom-seo-be.vercel.app/rule/create-rules',
+        'https://ct-custom-seo-be.vercel.app/rule/saved-rules',
         'https://auth.australia-southeast1.gcp.commercetools.com/oauth/token',
         'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment',
         'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment/product-projections',
