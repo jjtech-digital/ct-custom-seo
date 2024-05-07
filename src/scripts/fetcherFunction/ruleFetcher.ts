@@ -19,16 +19,18 @@ export const createRules = async (payload: any, setState: Function) => {
     return error;
   }
 };
-export const getAllRules = async (accessToken: string) => {
+export const getAllRules = async (accessToken: string,setState: Function) => {
   try {
+    setState((prev: any) => ({ ...prev, pageLoading: true }));
     const response = await axios.get(`${apiBaseUrl}/rule/saved-rules`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-
+    setState((prev: any) => ({ ...prev, pageLoading: false }));
     return response?.data;
   } catch (error) {
+    setState((prev: any) => ({ ...prev, pageLoading: false }));
     console.error('Error fetching all rules:', error);
     return error;
   }

@@ -11,8 +11,8 @@ export function useSettings() {
 
     return response?.data;
   };
-  const getsavedRules = async (token: string) => {
-    const response = await getAllRules(token);
+  const getsavedRules = async (token: string, setState: Function) => {
+    const response = await getAllRules(token,setState);
     return response;
   };
   return { createRuleshandler, getCtObjToken, getsavedRules };
