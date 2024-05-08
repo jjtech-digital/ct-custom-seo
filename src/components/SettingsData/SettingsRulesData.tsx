@@ -14,6 +14,7 @@ import { useSettings } from '../../scripts/useSettings/useSettings';
 import { useAppContext } from '../../context/AppContext';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
 import { ContentNotification } from '@commercetools-uikit/notifications';
+import Loader from '../Loader/Loader';
 export interface RuleContentItem {
   rulesInput: string;
   deletable: boolean;
@@ -185,9 +186,7 @@ const SettingsRulesData = () => {
       )}
     </div>
   ) : (
-    <div>
-      <LoadingSpinner /> Loading...
-    </div>
+    <Loader shoudLoaderSpinnerShow={true} loadingMessage={'Loading...'} />
   );
 };
 

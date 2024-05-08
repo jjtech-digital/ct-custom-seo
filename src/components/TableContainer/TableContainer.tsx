@@ -27,8 +27,9 @@ import {
 } from './TableContainer.types';
 import { descriptionPattern, titlePattern } from '../../constants';
 import styles from './TableContainer.module.css';
-import LoadingSpinner from '@commercetools-uikit/loading-spinner';
+
 import { useAppContext } from '../../context/AppContext';
+import Loader from '../Loader/Loader';
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
   const [search, setSearch] = useState('');
@@ -308,9 +309,8 @@ const TableContainer = () => {
               let selectedRows;
               selectedRows = gridApi?.getSelectedRows();
               console.log(selectedRows);
-              alert("check selected data in console")
-            }
-            }
+              alert('check selected data in console');
+            }}
             isDisabled={false}
           />
 
@@ -369,9 +369,7 @@ const TableContainer = () => {
           />
         </div>
       ) : (
-        <div className={`${styles.loaderContainer}`}>
-          <LoadingSpinner /> Loading...
-        </div>
+        <Loader shoudLoaderSpinnerShow={true} loadingMessage={'Loading...'} />
       )}
     </div>
   );
