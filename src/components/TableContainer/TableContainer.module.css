@@ -9,7 +9,10 @@
   display: flex;
   justify-content: space-between
 }
-
+.actionContainer{
+  display: flex;
+  gap: 10px;
+}
 .searchBar {
   width: 40%;
   display: flex

@@ -166,9 +166,7 @@ const TableContainer = () => {
 
   const onGenerateClick = async (params: any) => {
     gridRef.current!.api.showLoadingOverlay();
-    const aiResponse = await getSeoMetaData(
-      params?.data?.id
-    );
+    const aiResponse = await getSeoMetaData(params?.data?.id);
     let metaData = aiResponse?.choices?.[0]?.message?.content;
 
     const titleMatch = metaData?.match(titlePattern);
@@ -302,9 +300,40 @@ const TableContainer = () => {
             // isClearable={false}
           />
         </div>
-        <Link to={`${match.url}/settings`} className={`${styles.settingIcon}`}>
-          <GearIcon size="scale" color="primary40" />
-        </Link>
+        <div className={`${styles.actionContainer}`}>
+          <PrimaryButton
+            size="small"
+            label="Generate"
+            onClick={() => {
+              let selectedRows;
+              selectedRows = gridApi?.getSelectedRows();
+              console.log(selectedRows);
+              alert("check selected data in console")
+            }
+            }
+            isDisabled={false}
+          />
+
+          <PrimaryButton
+            size="small"
+            label="Cancel"
+            onClick={() => alert('functionality not yet implemented')}
+            isDisabled={false}
+          />
+
+          <PrimaryButton
+            size="small"
+            label="Apply"
+            onClick={() => alert('functionality not yet implemented')}
+            isDisabled={false}
+          />
+          <Link
+            to={`${match.url}/settings`}
+            className={`${styles.settingIcon}`}
+          >
+            <GearIcon size="scale" color="primary40" />
+          </Link>
+        </div>
       </div>
       {!state.pageLoading && !!tableData?.length && tableData.length > 0 ? (
         <div
