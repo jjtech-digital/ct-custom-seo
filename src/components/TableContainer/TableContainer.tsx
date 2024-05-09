@@ -50,7 +50,8 @@ const TableContainer = () => {
   }));
 
   const { page, perPage } = usePaginationState();
-  const { getAllProductsData, getSeoMetaData } = useProducts();
+  const { getAllProductsData, getSeoMetaData, updateProductSeoMetaData } =
+    useProducts();
   const { state, setState } = useAppContext();
   const match = useRouteMatch();
   const offSet = (page?.value - 1) * perPage?.value;
@@ -200,13 +201,20 @@ const TableContainer = () => {
   //   }
   // };
 
-  const onApplyClick = useCallback(
-    (rowIndex) => {
+  const onApplyClick =  useCallback(
+    async (rowIndex) => {
       const updatedRowData =
         gridRef?.current!?.api?.getDisplayedRowAtIndex(rowIndex)?.data;
-      const rowData = [...tableData];
-      rowData[rowIndex] = { ...rowData[rowIndex], ...updatedRowData };
-      setTableData(rowData);
+
+      const res = await updateProductSeoMetaData(
+        updatedRowData?.id,
+        'updatedRowData?.masterData?.current?.metaTitle',
+        'updatedRowData?.masterData?.current?.metaDescription'
+      );
+      console.log(res);
+      // const rowData = [...tableData];
+      // rowData[rowIndex] = { ...rowData[rowIndex], ...updatedRowData };
+      // setTableData(rowData);
       gridRef?.current!?.api?.stopEditing();
     },
     [tableData]
@@ -375,5 +383,5 @@ const TableContainer = () => {
   );
 };
 export default TableContainer;
-// productProjectionSea
+
 // TProductProjectionSearchResult
