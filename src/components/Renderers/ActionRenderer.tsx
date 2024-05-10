@@ -8,16 +8,16 @@ export default (props: any) => {
   const { getSeoMetaData, updateProductSeoMetaData } = useProducts();
 
   useEffect(() => {
-    props.api.addEventListener('rowEditingStarted', onRowEditingStarted);
-    props.api.addEventListener('rowEditingStopped', onRowEditingStopped);
+    props.api.addEventListener('rowEditingStarted', handleRowEditingStarted);
+    props.api.addEventListener('rowEditingStopped', handleRowEditingStopped);
 
     return () => {
-      props.api.removeEventListener('rowEditingStarted', onRowEditingStarted);
-      props.api.removeEventListener('rowEditingStopped', onRowEditingStopped);
+      props.api.removeEventListener('rowEditingStarted', handleRowEditingStarted);
+      props.api.removeEventListener('rowEditingStopped', handleRowEditingStopped);
     };
   }, []);
 
-  function onRowEditingStarted(params: any) {
+  function handleRowEditingStarted(params: any) {
     if (props.node === params.node) {
       setEditing(true);
     } else {
@@ -25,14 +25,14 @@ export default (props: any) => {
     }
   }
 
-  function onRowEditingStopped(params: any) {
+  function handleRowEditingStopped(params: any) {
     if (props.node === params.node) {
       setEditing(false);
     } else {
       setDisabled(false);
     }
   }
-  const onGenerateClick = async (params: any) => {
+  const handleGenerateClick = async (params: any) => {
     props.gridRef.current!.api.showLoadingOverlay();
     const aiResponse = await getSeoMetaData(params?.data?.id);
     let metaData = aiResponse?.choices?.[0]?.message?.content;
@@ -50,7 +50,7 @@ export default (props: any) => {
     });
     props.gridRef.current!.api.hideOverlay();
   };
-  const onApplyClick = async (rowIndex: number) => {
+  const handleApplyClick = async (rowIndex: number) => {
     const updatedRowData =
         props.gridRef?.current!?.api?.getDisplayedRowAtIndex(rowIndex)?.data;
     if (
@@ -59,7 +59,7 @@ export default (props: any) => {
         updatedRowData.masterData.current
     ) {
         const { metaTitle, metaDescription } = updatedRowData.masterData.current;
-        
+
         if (metaTitle !== null && metaTitle !== undefined && 
             metaDescription !== null && metaDescription !== undefined) {
             const res = await updateProductSeoMetaData(
@@ -76,7 +76,7 @@ export default (props: any) => {
 };
 
 
-  function stopEditing(bool: boolean) {
+  const handleStopEditing = (bool: boolean) => {
     props.gridRef?.current!?.api?.stopEditing(bool);
   }
 
@@ -86,7 +86,7 @@ export default (props: any) => {
         <PrimaryButton
           size="medium"
           label="Generate"
-          onClick={() => onGenerateClick(props)}
+          onClick={() => handleGenerateClick(props)}
           isDisabled={disabled}
         />
       </div>
@@ -94,7 +94,7 @@ export default (props: any) => {
         <PrimaryButton
           size="medium"
           label="Cancel"
-          onClick={() => stopEditing(true)}
+          onClick={() => handleStopEditing(true)}
           isDisabled={disabled}
         />
       </div>
@@ -102,7 +102,7 @@ export default (props: any) => {
         <PrimaryButton
           size="medium"
           label="Apply"
-          onClick={() => onApplyClick(props.rowIndex)}
+          onClick={() => handleApplyClick(props.rowIndex)}
           isDisabled={disabled}
         />
       </div>
