@@ -6,6 +6,8 @@ interface Props {
 interface IAppContext {
   isApiFetching: boolean;
   pageLoading: boolean;
+  notificationMessage: string;
+  notificationMessageType: 'success' | 'error' | 'info' | 'warning';
 }
 export type IUseAppState = {
   state: IAppContext;
@@ -13,7 +15,12 @@ export type IUseAppState = {
 };
 const AppContext = createContext<IUseAppState>({} as IUseAppState);
 
-const initalState = { pageLoading: false, isApiFetching: false };
+const initalState: IAppContext = {
+  pageLoading: false,
+  isApiFetching: false,
+  notificationMessage: '',
+  notificationMessageType: 'success',
+};
 
 export const AppContextProvider = ({ children }: Props) => {
   const [state, setState] = useState({
