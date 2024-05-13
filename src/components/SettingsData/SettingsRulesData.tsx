@@ -50,20 +50,7 @@ const SettingsRulesData = () => {
     }
   }, [fields, append]);
 
-  useEffect(() => {
-    const storeToken = async () => {
-      try {
-        const token = await getCtObjToken();
-        if (token) {
-          localStorage.setItem('token', token);
-        }
-      } catch (error) {
-        console.error('Error storing token:', error);
-      }
-    };
 
-    storeToken();
-  }, []);
   useEffect(() => {
     const accessToken = localStorage.getItem('token');
     const fetchSavedRules = async () => {

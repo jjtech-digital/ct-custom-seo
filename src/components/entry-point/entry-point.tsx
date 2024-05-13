@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { lazy, useEffect } from 'react';
 import {
   ApplicationShell,
   setupGlobalErrorListener,
@@ -6,6 +6,7 @@ import {
 import type { ApplicationWindow } from '@commercetools-frontend/constants';
 import loadMessages from '../../load-messages';
 import { AppContextProvider } from '../../context/AppContext';
+import { useSettings } from '../../scripts/useSettings/useSettings';
 
 declare let window: ApplicationWindow;
 
@@ -20,17 +21,35 @@ const AsyncApplicationRoutes = lazy(
 // in order to catch possible errors on rendering/mounting.
 setupGlobalErrorListener();
 
-const EntryPoint = () => (
-  <AppContextProvider>
-    <ApplicationShell
-      enableReactStrictMode
-      environment={window.app}
-      applicationMessages={loadMessages}
-    >
-      <AsyncApplicationRoutes />
-    </ApplicationShell>
-  </AppContextProvider>
-);
+const EntryPoint = () => {
+  const { getCtObjToken } = useSettings();
+  const storeToken = async () => {
+    try {
+      const token = await getCtObjToken();
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+    } catch (error) {
+      console.error('Error storing token:', error);
+    }
+  };
+
+  useEffect(() => {
+    storeToken();
+  }, []);
+
+  return (
+    <AppContextProvider>
+      <ApplicationShell
+        enableReactStrictMode
+        environment={window.app}
+        applicationMessages={loadMessages}
+      >
+        <AsyncApplicationRoutes />
+      </ApplicationShell>
+    </AppContextProvider>
+  );
+};
 EntryPoint.displayName = 'EntryPoint';
 
 export default EntryPoint;
