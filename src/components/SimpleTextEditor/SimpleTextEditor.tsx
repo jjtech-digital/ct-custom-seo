@@ -54,6 +54,7 @@ export const SimpleTextEditor = forwardRef<
         <IconButton
           icon={<CloseBoldIcon />}
           label="CloseBoldIcon"
+          size="medium"
           onClick={() => {
             updateValue(props.initialValue);
             props.stopEditing();
@@ -62,6 +63,7 @@ export const SimpleTextEditor = forwardRef<
         <IconButton
           icon={<CheckBoldIcon />}
           label="CheckBoldIcon"
+          size="medium"
           onClick={() => {
             updateValue(value);
             props.stopEditing();
