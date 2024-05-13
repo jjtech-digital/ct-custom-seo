@@ -25,16 +25,18 @@ import {
   IProduct,
   IResponseFromAi,
 } from './TableContainer.types';
-import { descriptionPattern, titlePattern } from '../../constants';
 import styles from './TableContainer.module.css';
 
 import { useAppContext } from '../../context/AppContext';
 import Loader from '../Loader/Loader';
+import ActionRenderer from '../Renderers/ActionRenderer';
+
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
-  const [search, setSearch] = useState('');
+  const [columnApi, setColumnApi] = useState(null);
   const [tableData, setTableData] = useState<IProduct[]>([]);
   const [fetchedData, setFetchedData] = useState<IFetchrawData>();
+  const [search, setSearch] = useState('');
   const [responseFromAi, setResponseFromAi] = useState<IResponseFromAi>({
     id: null,
     title: null,
@@ -50,7 +52,7 @@ const TableContainer = () => {
   }));
 
   const { page, perPage } = usePaginationState();
-  const { getAllProductsData, getSeoMetaData } = useProducts();
+  const { getAllProductsData } = useProducts();
   const { state, setState } = useAppContext();
   const match = useRouteMatch();
   const offSet = (page?.value - 1) * perPage?.value;
@@ -66,7 +68,7 @@ const TableContainer = () => {
       field: 'productKey',
       flex: 1,
       minWidth: 140,
-
+      editable: false,
       headerCheckboxSelection: true,
       checkboxSelection: true,
       valueGetter: (p: any) => {
@@ -76,87 +78,72 @@ const TableContainer = () => {
     {
       field: 'name',
       flex: 3.5,
+      editable: false,
       valueGetter: (params: any) => {
         return params.data?.masterData?.current?.nameAllLocales?.[0]?.value;
       },
     },
     {
+      field: 'seoTitle',
       headerName: 'SEO Title',
       flex: 4,
-      tooltipComponentParams: { color: '#f9f5f5' },
+      // tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
-        return params?.data?.masterData?.current?.title;
+        return params?.data?.masterData?.current?.metaTitle;
       },
-      editable: true,
-      sortable: false,
-    },
-    {
-      headerName: 'SEO Description',
-      flex: 4,
-      tooltipComponentParams: { color: '#f9f5f5' },
-      tooltipValueGetter: (p: { value: any }) => p.value,
-      valueGetter: (params: any) => {
-        return params.data?.masterData?.current?.description;
+      valueSetter: (params: any) => {
+        params.data.masterData.current.metaTitle = params.newValue;
+        return true;
       },
       editable: true,
       sortable: false,
       cellEditor: SimpleTextEditor,
       cellEditorPopup: true,
-      //   cellEditorParams: {
-      //     maxLength: 5000
-      // }
+    },
+    {
+      field: 'seoDescription',
+      headerName: 'SEO Description',
+      flex: 4,
+      // tooltipComponentParams: { color: '#f9f5f5' },
+      tooltipValueGetter: (p: { value: any }) => p.value,
+      valueGetter: (params: any) => {
+        return params.data?.masterData?.current?.metaDescription;
+      },
+      valueSetter: (params: any) => {
+        params.data.masterData.current.metaDescription = params.newValue;
+        return true;
+      },
+      editable: true,
+      sortable: false,
+      cellEditor: SimpleTextEditor,
+      cellEditorPopup: true,
     },
     {
       headerName: 'Actions',
       field: 'productKey',
-      flex: 2.5,
-      minWidth: 280,
+      flex: 2,
+      editable: false,
+      minWidth: 200,
       sortable: false,
-      cellRenderer: (params: any) => (
-        <div style={{ display: 'flex' }}>
-          <div>
-            <PrimaryButton
-              size="small"
-              label="Generate"
-              onClick={() => onGenerateClick(params)}
-              isDisabled={false}
-            />
-          </div>
-          <div style={{ marginInline: '6px' }}>
-            <PrimaryButton
-              size="small"
-              label="Cancel"
-              onClick={() => alert('functionality not yet implemented')}
-              isDisabled={false}
-            />
-          </div>
-          <div>
-            <PrimaryButton
-              size="small"
-              label="Apply"
-              onClick={() => onApplyClick(params.rowIndex)}
-              isDisabled={false}
-            />
-          </div>
-        </div>
-      ),
+      cellRenderer: 'actionRenderer',
+      cellRendererParams: {
+        setResponseFromAi: setResponseFromAi,
+        gridRef: gridRef,
+      },
     },
   ]);
 
-  // const onBtStopEditing = useCallback(() => {
-  //   gridRef.current!.api.stopEditing();
-  // }, []);
-  // const handleUpdate = (props: any) => {
-  // props.api.startEditingCell({
-  //   rowIndex: props.node.rowIndex!,
-  //   colKey: props.column!.getId(),
-  // });
-  // };
+  const components = useMemo(
+    () => ({
+      actionRenderer: ActionRenderer,
+    }),
+    []
+  );
   const onGridReady = (params: { api: SetStateAction<null> }) => {
-    setGridApi(params?.api);
+    setGridApi(params.api);
+    setColumnApi(params.columnApi);
   };
-
   const defaultColDef = useMemo(() => {
     return {
       flex: 1,
@@ -165,64 +152,12 @@ const TableContainer = () => {
     };
   }, []);
 
-  const onGenerateClick = async (params: any) => {
-    gridRef.current!.api.showLoadingOverlay();
-    const aiResponse = await getSeoMetaData(params?.data?.id);
-    let metaData = aiResponse?.choices?.[0]?.message?.content;
-
-    const titleMatch = metaData?.match(titlePattern);
-    const title = titleMatch ? titleMatch[2].trim() : null;
-
-    const descriptionMatch = metaData?.match(descriptionPattern);
-    const description = descriptionMatch ? descriptionMatch[2].trim() : null;
-
-    setResponseFromAi({
-      id: params.data.id,
-      title: title,
-      description: description,
-    });
-    gridRef.current!.api.hideOverlay();
-  };
   const removeDoubleQuotes = (text: string) => {
     if (text.startsWith('"') && text.endsWith('"')) {
       return text.slice(1, -1);
     }
     return text;
   };
-  // const getRowId = useCallback((params) => {
-  //   return params?.data?.id;
-  // }, []);
-
-  // const onCellDoubleClick = (event) => {
-  //   if (event?.column?.colId === 'seoDescription') {
-  //     const rowIndex = event?.rowIndex;
-  //     gridApi?.startEditingRow({ rowIndex });
-  //   }
-  // };
-
-  const onApplyClick = useCallback(
-    (rowIndex) => {
-      const updatedRowData =
-        gridRef?.current!?.api?.getDisplayedRowAtIndex(rowIndex)?.data;
-      const rowData = [...tableData];
-      rowData[rowIndex] = { ...rowData[rowIndex], ...updatedRowData };
-      setTableData(rowData);
-      gridRef?.current!?.api?.stopEditing();
-    },
-    [tableData]
-  );
-
-  // const onCancelClick = useCallback((rowIndex) => {
-  //   const rowDataCopy = [...originalTableData];
-  //   rowDataCopy[rowIndex] = { ...originalTableData[rowIndex] };
-  //   setTableData(rowDataCopy);
-  //   gridRef?.current!?.api?.stopEditing();
-  // },[originalTableData]
-  // );
-  //   const onCancelClick = (rowIndex) => {
-  //     gridRef?.current!?.api?.stopEditing();
-  //     gridRef?.current!?.api?.refreshCells({ rowNodes: [gridRef?.current!?.api?.getRowNode(rowIndex)] });
-  // };
 
   useEffect(() => {
     setTableData([]);
@@ -275,8 +210,8 @@ const TableContainer = () => {
         const cleanedDescription = removeDoubleQuotes(
           responseFromAi.description
         );
-        updatedTableData[index].masterData.current.title = cleanedTitle;
-        updatedTableData[index].masterData.current.description =
+        updatedTableData[index].masterData.current.metaTitle = cleanedTitle;
+        updatedTableData[index].masterData.current.metaDescription =
           cleanedDescription;
         setTableData(updatedTableData);
       }
@@ -303,7 +238,7 @@ const TableContainer = () => {
         </div>
         <div className={`${styles.actionContainer}`}>
           <PrimaryButton
-            size="small"
+            size="medium"
             label="Generate"
             onClick={() => {
               let selectedRows;
@@ -315,14 +250,14 @@ const TableContainer = () => {
           />
 
           <PrimaryButton
-            size="small"
+            size="medium"
             label="Cancel"
             onClick={() => alert('functionality not yet implemented')}
             isDisabled={false}
           />
 
           <PrimaryButton
-            size="small"
+            size="medium"
             label="Apply"
             onClick={() => alert('functionality not yet implemented')}
             isDisabled={false}
@@ -339,7 +274,6 @@ const TableContainer = () => {
         <div
           className="ag-theme-quartz"
           style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
-          // style={containerStyle}
         >
           <div style={gridStyle}>
             <AgGridReact
@@ -349,6 +283,7 @@ const TableContainer = () => {
               columnDefs={colDefs as any}
               defaultColDef={defaultColDef}
               onGridReady={onGridReady as any}
+              components={components}
               rowSelection={'multiple'}
               suppressRowClickSelection={true}
               tooltipShowDelay={1000}
@@ -356,7 +291,8 @@ const TableContainer = () => {
               reactiveCustomComponents={true}
               overlayLoadingTemplate={overlayLoadingTemplate}
               // onCellDoubleClick={onCellDoubleClick}
-              // suppressClickEdit={true}
+              //  suppressClickEdit={true}
+              // editType="fullRow"
             />
           </div>
           <Pagination
@@ -375,5 +311,5 @@ const TableContainer = () => {
   );
 };
 export default TableContainer;
-// productProjectionSea
+
 // TProductProjectionSearchResult

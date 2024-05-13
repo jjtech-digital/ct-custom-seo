@@ -20,10 +20,12 @@ const config = {
         'https://ct-custom-seo-be.vercel.app/rule',
         'https://ct-custom-seo-be.vercel.app/rule/create-rules',
         'https://ct-custom-seo-be.vercel.app/rule/saved-rules',
+        'https://api.australia-southeast1.gcp.commercetools.com/jj-seo-app',
         'https://auth.australia-southeast1.gcp.commercetools.com/oauth/token',
         'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment',
         'https://api.australia-southeast1.gcp.commercetools.com/ct-assessment/product-projections',
         'https://api.openai.com/v1/chat/completions',
+        '*'
       ],
     },
   },

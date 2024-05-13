@@ -5,8 +5,10 @@ export interface LocaleType {
 export interface MasterDataCurrentType {
   name: string;
   nameAllLocales: LocaleType[];
-  description: string | null;
   title?: string | null;
+  description: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
 }
 export interface MasterDataType {
   current: MasterDataCurrentType;
