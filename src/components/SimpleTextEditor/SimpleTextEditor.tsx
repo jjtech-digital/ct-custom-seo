@@ -1,9 +1,10 @@
 import { forwardRef, useEffect, useRef } from 'react';
 import styles from './SimpleTextEditor.module.css';
-import { PrimaryButton } from '@commercetools-frontend/ui-kit';
-
+import IconButton from '@commercetools-uikit/icon-button';
+import { CloseBoldIcon } from '@commercetools-uikit/icons';
+import { CheckBoldIcon } from '@commercetools-uikit/icons';
 interface SimpleTextEditorProps {
-  value: string | null;
+  value: string;
   onValueChange: (value: string | null) => void;
   eventKey: string | null;
   rowIndex?: number;
@@ -49,14 +50,24 @@ export const SimpleTextEditor = forwardRef<
         onChange={(e) => updateValue(e.target.value)}
         className={`${styles.mySimpleEditor}`}
       />
-
-      <PrimaryButton
-        label="Cancel"
-        onClick={() => {
-          updateValue(props.initialValue);
-          props.stopEditing();
-        }}
-      />
+      <div className={`${styles.mySimpleEditorButtonContainer}`}>
+        <IconButton
+          icon={<CloseBoldIcon />}
+          label="CloseBoldIcon"
+          onClick={() => {
+            updateValue(props.initialValue);
+            props.stopEditing();
+          }}
+        />
+        <IconButton
+          icon={<CheckBoldIcon />}
+          label="CheckBoldIcon"
+          onClick={() => {
+            updateValue(value);
+            props.stopEditing();
+          }}
+        />
+      </div>
     </div>
   );
 });
