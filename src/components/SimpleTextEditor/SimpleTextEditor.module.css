@@ -1,13 +1,25 @@
+.mySimpleEditorContainer {
+    width: 22rem;
+    height: 8rem;
+    display: flex;
+    gap: 6px;
+    background-color: rgb(255, 255, 255);
+    padding-right: 4px;
+}
+
 .mySimpleEditor {
-    width: 18rem;
-    height: 12rem;
-    font-family: 'IBM Plex Sans', sans-serif; 
+    flex: 2;
+    font-family: 'Inter', 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
     box-sizing: border-box;
     outline: none;
-    padding:6px;
+    padding: 6px;
     border-radius: 4px;
-    border: 2px solid #2196f3;
-    background-color: white;
+    border: 1px solid rgb(195, 197, 213);
     resize: vertical;
     scrollbar-width: none;
+}
+
+.mySimpleEditor:focus {
+    border: 2px solid rgb(87, 87, 255);
 }

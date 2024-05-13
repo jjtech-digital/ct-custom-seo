@@ -1,40 +1,49 @@
-import { forwardRef, useEffect, useRef } from 'react';
+import { ChangeEvent, forwardRef, useEffect, useRef, useState } from 'react';
 import styles from './SimpleTextEditor.module.css';
+import { PrimaryButton } from '@commercetools-frontend/ui-kit';
 
-export const SimpleTextEditor = forwardRef(
-  ({ value, onValueChange, eventKey, rowIndex, column }, ref) => {
-    const updateValue = (val: string) => {
-      onValueChange?.(val === '' ? null : val);
-    };
+export const SimpleTextEditor = forwardRef((props, ref) => {
+  const { value, onValueChange, eventKey, rowIndex, column } = props;
+  const updateValue = (val: string) => {
+    onValueChange?.(val === '' ? null : val);
+  };
 
-    useEffect(() => {
-      let startValue;
+  useEffect(() => {
+    let startValue;
+    if (eventKey === 'Backspace') {
+      startValue = '';
+    } else if (eventKey && eventKey.length === 1) {
+      startValue = eventKey;
+    } else {
+      startValue = value;
+    }
+    if (startValue == null) {
+      startValue = '';
+    }
 
-      if (eventKey === 'Backspace') {
-        startValue = '';
-      } else if (eventKey && eventKey.length === 1) {
-        startValue = eventKey;
-      } else {
-        startValue = value;
-      }
-      if (startValue == null) {
-        startValue = '';
-      }
+    updateValue(startValue);
 
-      updateValue(startValue);
+    refInput.current?.focus();
+  }, []);
 
-      refInput.current?.focus();
-    }, []);
+  const refInput = useRef<HTMLInputElement>(null);
 
-    const refInput = useRef<HTMLInputElement>(null);
-
-    return (
+  return (
+    <div className={`${styles.mySimpleEditorContainer}`}>
       <textarea
         value={value || ''}
         ref={refInput}
-        onChange={(event) => updateValue(event.target.value)}
+        onChange={(e) => updateValue(e.target.value)}
         className={`${styles.mySimpleEditor}`}
       />
-    );
-  }
-);
+
+      <PrimaryButton
+        label="Cancel"
+        onClick={() => {
+          updateValue(props.initialValue);
+          props.stopEditing();
+        }}
+      />
+    </div>
+  );
+});

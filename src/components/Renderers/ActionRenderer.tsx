@@ -12,8 +12,14 @@ export default (props: any) => {
     props.api.addEventListener('rowEditingStopped', handleRowEditingStopped);
 
     return () => {
-      props.api.removeEventListener('rowEditingStarted', handleRowEditingStarted);
-      props.api.removeEventListener('rowEditingStopped', handleRowEditingStopped);
+      props.api.removeEventListener(
+        'rowEditingStarted',
+        handleRowEditingStarted
+      );
+      props.api.removeEventListener(
+        'rowEditingStopped',
+        handleRowEditingStopped
+      );
     };
   }, []);
 
@@ -52,33 +58,32 @@ export default (props: any) => {
   };
   const handleApplyClick = async (rowIndex: number) => {
     const updatedRowData =
-        props.gridRef?.current!?.api?.getDisplayedRowAtIndex(rowIndex)?.data;
+      props.gridRef?.current!?.api?.getDisplayedRowAtIndex(rowIndex)?.data;
     if (
-        updatedRowData &&
-        updatedRowData.masterData &&
-        updatedRowData.masterData.current
+      updatedRowData &&
+      updatedRowData.masterData &&
+      updatedRowData.masterData.current
     ) {
-        const { metaTitle, metaDescription } = updatedRowData.masterData.current;
+      const { metaTitle, metaDescription } = updatedRowData.masterData.current;
 
-        if (metaTitle !== null && metaTitle !== undefined && 
-            metaDescription !== null && metaDescription !== undefined) {
-            const res = await updateProductSeoMetaData(
-                updatedRowData.id,
-                metaTitle,
-                metaDescription
-            );
-            console.log(res);
-        }
+      if (
+        metaTitle !== null &&
+        metaTitle !== undefined &&
+        metaDescription !== null &&
+        metaDescription !== undefined
+      ) {
+        const res = await updateProductSeoMetaData(
+          updatedRowData.id,
+          metaTitle,
+          metaDescription
+        );
+        console.log(res);
+      }
     }
 
     // Stop editing the grid
     props.gridRef?.current!?.api?.stopEditing(false);
-};
-
-
-  const handleStopEditing = (bool: boolean) => {
-    props.gridRef?.current!?.api?.stopEditing(bool);
-  }
+  };
 
   return (
     <div style={{ display: 'flex' }}>
@@ -87,14 +92,6 @@ export default (props: any) => {
           size="medium"
           label="Generate"
           onClick={() => handleGenerateClick(props)}
-          isDisabled={disabled}
-        />
-      </div>
-      <div style={{ marginInline: '6px' }}>
-        <PrimaryButton
-          size="medium"
-          label="Cancel"
-          onClick={() => handleStopEditing(true)}
           isDisabled={disabled}
         />
       </div>

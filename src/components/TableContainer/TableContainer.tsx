@@ -87,7 +87,7 @@ const TableContainer = () => {
       field: 'seoTitle',
       headerName: 'SEO Title',
       flex: 4,
-      tooltipComponentParams: { color: '#f9f5f5' },
+      // tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
         return params?.data?.masterData?.current?.metaTitle;
@@ -98,12 +98,14 @@ const TableContainer = () => {
       },
       editable: true,
       sortable: false,
+      cellEditor: SimpleTextEditor,
+      cellEditorPopup: true,
     },
     {
       field: 'seoDescription',
       headerName: 'SEO Description',
       flex: 4,
-      tooltipComponentParams: { color: '#f9f5f5' },
+      // tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
         return params.data?.masterData?.current?.metaDescription;
@@ -120,9 +122,9 @@ const TableContainer = () => {
     {
       headerName: 'Actions',
       field: 'productKey',
-      // flex: 2.5,
+      flex: 2,
       editable: false,
-      minWidth: 350,
+      minWidth: 200,
       sortable: false,
       cellRenderer: 'actionRenderer',
       cellRendererParams: {
