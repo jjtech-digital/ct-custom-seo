@@ -4,13 +4,15 @@ import Spacings from '@commercetools-uikit/spacings';
 import Channels from './components/channels';
 import TableContainer from './components/TableContainer/TableContainer';
 import Settings from './components/Settings/Settings';
+import { useAppContext } from './context/AppContext';
+import Notification from './components/Notification/Notification';
 
 type ApplicationRoutesProps = {
   children?: ReactNode;
 };
 const ApplicationRoutes = (_props: ApplicationRoutesProps) => {
   const match = useRouteMatch();
-
+  const { state, setState } = useAppContext();
   /**
    * When using routes, there is a good chance that you might want to
    * restrict the access to a certain route based on the user permissions.
@@ -23,19 +25,28 @@ const ApplicationRoutes = (_props: ApplicationRoutesProps) => {
    */
 
   return (
-    <Spacings.Inset scale="l">
-      <Switch>
-        <Route path={`${match.path}/channels`}>
-          <Channels linkToWelcome={match.url} />
-        </Route>
-        <Route path={`${match.path}/settings`}>
-          <Settings linkToProducts={match.url} />
-        </Route>
-        <Route>
-          <TableContainer />
-        </Route>
-      </Switch>
-    </Spacings.Inset>
+    <>
+      <Spacings.Inset scale="l">
+        <Switch>
+          <Route path={`${match.path}/channels`}>
+            <Channels linkToWelcome={match.url} />
+          </Route>
+          <Route path={`${match.path}/settings`}>
+            <Settings linkToProducts={match.url} />
+          </Route>
+          <Route>
+            <TableContainer />
+          </Route>
+        </Switch>
+      </Spacings.Inset>
+      {state?.notificationMessage && (
+        <Notification
+          successMessage={state.notificationMessage}
+          setSuccessMessage={setState}
+          type={state.notificationMessageType}
+        />
+      )}
+    </>
   );
 };
 ApplicationRoutes.displayName = 'ApplicationRoutes';

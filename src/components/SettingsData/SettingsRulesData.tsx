@@ -13,7 +13,6 @@ import SecondaryButton from '@commercetools-uikit/secondary-button';
 import { useSettings } from '../../scripts/useSettings/useSettings';
 import { useAppContext } from '../../context/AppContext';
 import LoadingSpinner from '@commercetools-uikit/loading-spinner';
-import { ContentNotification } from '@commercetools-uikit/notifications';
 import Loader from '../Loader/Loader';
 export interface RuleContentItem {
   rulesInput: string;
@@ -27,7 +26,6 @@ export interface SubmitEvent {
 }
 const SettingsRulesData = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [successMessage, setSuccessMessage] = useState('');
   const { createRuleshandler, getCtObjToken, getsavedRules } = useSettings();
   const { state, setState } = useAppContext();
   const {
@@ -87,15 +85,6 @@ const SettingsRulesData = () => {
     fetchSavedRules();
   }, []);
 
-  useEffect(() => {
-    if (successMessage) {
-      const timer = setTimeout(() => {
-        handleNotificationDismiss();
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [successMessage]);
   const handleAddField = () => {
     append({ rulesInput: '', deletable: false });
 
@@ -112,14 +101,16 @@ const SettingsRulesData = () => {
     const formData: FormData = data as FormData;
     try {
       const response = await createRuleshandler(formData, setState);
-      setSuccessMessage(response?.message);
+      setState((prev: any) => ({
+        ...prev,
+        notificationMessage: response?.message,
+        notificationMessageType:"success"
+      }));
     } catch (error) {
       console.log(error);
     }
   };
-  const handleNotificationDismiss = () => {
-    setSuccessMessage('');
-  };
+
   return !state.pageLoading ? (
     <div>
       <form
@@ -174,16 +165,6 @@ const SettingsRulesData = () => {
           )}
         </div>
       </form>
-      {successMessage && (
-        <div className={`${styles.notificationBottom}`}>
-          <ContentNotification
-            type="success"
-            onRemove={handleNotificationDismiss}
-          >
-            {successMessage}
-          </ContentNotification>
-        </div>
-      )}
     </div>
   ) : (
     <Loader shoudLoaderSpinnerShow={true} loadingMessage={'Loading...'} />

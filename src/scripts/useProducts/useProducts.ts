@@ -21,12 +21,13 @@ export function useProducts() {
   const updateProductSeoMetaData = async (
     productId: string,
     metaTitle: string,
-    metaDescription: string
+    metaDescription: string,
+    version: number
   ) => {
     const response = await updateProductSeoMeta(
       productId,
       metaTitle,
-      metaDescription
+      metaDescription,version
     );
     return response;
   };
