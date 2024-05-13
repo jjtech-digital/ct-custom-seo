@@ -1,9 +1,22 @@
-import { ChangeEvent, forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 import styles from './SimpleTextEditor.module.css';
 import { PrimaryButton } from '@commercetools-frontend/ui-kit';
 
-export const SimpleTextEditor = forwardRef((props, ref) => {
-  const { value, onValueChange, eventKey, rowIndex, column } = props;
+interface SimpleTextEditorProps {
+  value: string | null;
+  onValueChange: (value: string | null) => void;
+  eventKey: string | null;
+  rowIndex?: number;
+  column?: string;
+  initialValue: string;
+  stopEditing: () => void;
+}
+
+export const SimpleTextEditor = forwardRef<
+  HTMLInputElement,
+  SimpleTextEditorProps
+>((props, ref) => {
+  const { value, onValueChange, eventKey } = props;
   const updateValue = (val: string) => {
     onValueChange?.(val === '' ? null : val);
   };
@@ -26,7 +39,7 @@ export const SimpleTextEditor = forwardRef((props, ref) => {
     refInput.current?.focus();
   }, []);
 
-  const refInput = useRef<HTMLInputElement>(null);
+  const refInput = useRef<HTMLTextAreaElement>(null);
 
   return (
     <div className={`${styles.mySimpleEditorContainer}`}>
