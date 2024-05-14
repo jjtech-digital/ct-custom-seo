@@ -29,7 +29,8 @@ export const updateProductSeoMeta = async (
   productId: string,
   metaTitle: string,
   metaDescription: string,
-  version: number
+  version: number,
+  setState: Function
 ) => {
   const apiUrl = `https://api.australia-southeast1.gcp.commercetools.com/jj-seo-app/products/${productId}`;
   const accessToken = localStorage.getItem('token');
@@ -62,10 +63,18 @@ export const updateProductSeoMeta = async (
   try {
     const response = await axios.post(apiUrl, data, { headers });
     // version = response.data.version;
+    setState((prev: any) => ({
+      ...prev,
+      notificationMessage: 'SEO title and description updated successfully.',
+      notificationMessageType: 'success',
+    }));
     console.log('Product description updated successfully:', response.data);
-    return response.data;
   } catch (error) {
+    setState((prev: any) => ({
+      ...prev,
+      notificationMessage: 'Error updating SEO title and description.',
+      notificationMessageType: 'error',
+    }));
     console.error('Error updating product description:', error);
-    return null;
   }
 };

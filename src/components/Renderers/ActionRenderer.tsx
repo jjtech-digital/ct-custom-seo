@@ -44,6 +44,8 @@ export default (props: any) => {
   }
 
   const handleGenerateClick = async (params: any) => {
+    props.context.loadingOverlayMessage = 'Generating meta data';
+
     props.gridRef.current!.api.showLoadingOverlay();
     const aiResponse = await getSeoMetaData(params?.data?.id);
     let metaData = aiResponse?.choices?.[0]?.message?.content;
@@ -60,6 +62,7 @@ export default (props: any) => {
       description: description,
     });
     props.gridRef.current!.api.hideOverlay();
+    props.context.loadingOverlayMessage = 'Loading';
   };
 
   const handleApplyClick = async (rowIndex: number) => {
@@ -77,28 +80,32 @@ export default (props: any) => {
         setState((prev: any) => ({
           ...prev,
           notificationMessage: 'SEO title and SEO description cannot be empty.',
-          notificationMessageType:"error"
+          notificationMessageType: 'error',
         }));
       } else if (!metaTitle) {
         setState((prev: any) => ({
           ...prev,
           notificationMessage: 'SEO title cannot be empty.',
-          notificationMessageType:"error"
+          notificationMessageType: 'error',
         }));
       } else if (!metaDescription) {
         setState((prev: any) => ({
           ...prev,
           notificationMessage: 'SEO description cannot be empty.',
-          notificationMessageType:"error"
+          notificationMessageType: 'error',
         }));
       } else {
-        const res = await updateProductSeoMetaData(
+        props.context.loadingOverlayMessage = 'Applying';
+        props.gridRef.current!.api.showLoadingOverlay();
+        await updateProductSeoMetaData(
           updatedRowData.id,
           metaTitle,
           metaDescription,
-          updatedRowData.version
+          updatedRowData.version,
+          setState
         );
-        console.log(res);
+        props.gridRef.current!.api.hideOverlay();
+        props.context.loadingOverlayMessage = 'Loading';
       }
     }
 
