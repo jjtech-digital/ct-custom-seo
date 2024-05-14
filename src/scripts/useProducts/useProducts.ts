@@ -22,12 +22,15 @@ export function useProducts() {
     productId: string,
     metaTitle: string,
     metaDescription: string,
-    version: number
+    version: number,
+    setState: Function
   ) => {
     const response = await updateProductSeoMeta(
       productId,
       metaTitle,
-      metaDescription,version
+      metaDescription,
+      version,
+      setState
     );
     return response;
   };
