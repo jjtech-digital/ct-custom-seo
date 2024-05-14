@@ -9,13 +9,20 @@
   display: flex;
   justify-content: space-between
 }
-.actionContainer{
-  display: flex;
-  gap: 10px;
-}
+
 .searchBar {
   width: 40%;
   display: flex
+}
+
+.actionContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.actionButons {
+  display: flex;
+  gap: 6px;
 }
 
 .settingIcon {
@@ -38,15 +45,19 @@
   font-family: 'Inter', sans-serif;
   font-size: 16px;
 }
+
 .loadingDots {
   animation: blink 1s infinite;
 }
 
 @keyframes blink {
-  0%, 100% {
-    opacity: 1; 
+
+  0%,
+  100% {
+    opacity: 1;
   }
+
   50% {
-    opacity: 0; 
+    opacity: 0;
   }
 }
