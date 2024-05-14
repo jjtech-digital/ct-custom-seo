@@ -2,11 +2,16 @@ export interface LocaleType {
   locale: string;
   value: string;
 }
+export interface CategoriesType {
+  name: string | null;
+  slug: string | null;
+}
 export interface MasterDataCurrentType {
   name: string;
   nameAllLocales: LocaleType[];
   title?: string | null;
-  description: string | null;
+  description?: string | null;
+  categories?: CategoriesType[];
   metaTitle?: string | null;
   metaDescription?: string | null;
 }
@@ -18,13 +23,13 @@ export interface IProduct {
   key: string;
   masterData: MasterDataType;
 }
-export interface IFetchrawData{
-  data:IProduct[]
-  limit:string
-  message:string
-  offset:string
-  status:number
-  total:number
+export interface IFetchrawData {
+  data: IProduct[];
+  limit: string;
+  message: string;
+  offset: string;
+  status: number;
+  total: number;
 }
 
 export interface IResponseFromAi {

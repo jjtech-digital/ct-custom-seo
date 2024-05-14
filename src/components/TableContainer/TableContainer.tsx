@@ -37,6 +37,7 @@ const TableContainer = () => {
   const [tableData, setTableData] = useState<IProduct[]>([]);
   const [fetchedData, setFetchedData] = useState<IFetchrawData>();
   const [search, setSearch] = useState('');
+  const [selectedRows, setSelectedRows] = useState<IProduct[]>();
   const [responseFromAi, setResponseFromAi] = useState<IResponseFromAi>({
     id: null,
     title: null,
@@ -87,7 +88,6 @@ const TableContainer = () => {
       field: 'seoTitle',
       headerName: 'SEO Title',
       flex: 4,
-      // tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
         return params?.data?.masterData?.current?.metaTitle;
@@ -105,7 +105,6 @@ const TableContainer = () => {
       field: 'seoDescription',
       headerName: 'SEO Description',
       flex: 4,
-      // tooltipComponentParams: { color: '#f9f5f5' },
       tooltipValueGetter: (p: { value: any }) => p.value,
       valueGetter: (params: any) => {
         return params.data?.masterData?.current?.metaDescription;
@@ -158,6 +157,12 @@ const TableContainer = () => {
     }
     return text;
   };
+
+  const onSelectionChanged = useCallback(() => {
+    var getSelectedRows = gridRef.current!.api.getSelectedRows();
+    console.log(getSelectedRows)
+    setSelectedRows(getSelectedRows);
+  }, []);
 
   useEffect(() => {
     setTableData([]);
@@ -237,31 +242,28 @@ const TableContainer = () => {
           />
         </div>
         <div className={`${styles.actionContainer}`}>
-          <PrimaryButton
-            size="medium"
-            label="Generate"
-            onClick={() => {
-              let selectedRows;
-              selectedRows = gridApi?.getSelectedRows();
-              console.log(selectedRows);
-              alert('check selected data in console');
-            }}
-            isDisabled={false}
-          />
-
-          <PrimaryButton
-            size="medium"
-            label="Cancel"
-            onClick={() => alert('functionality not yet implemented')}
-            isDisabled={false}
-          />
-
-          <PrimaryButton
-            size="medium"
-            label="Apply"
-            onClick={() => alert('functionality not yet implemented')}
-            isDisabled={false}
-          />
+          {selectedRows && selectedRows.length > 0 &&(
+            <div className={`${styles.actionButons}`}>
+              <PrimaryButton
+                size="medium"
+                label="Generate"
+                onClick={() => alert('functionality not yet implemented')}
+                isDisabled={false}
+              />
+              <PrimaryButton
+                size="medium"
+                label="Cancel"
+                onClick={() => gridRef?.current!?.api?.stopEditing(true)}
+                isDisabled={false}
+              />
+              <PrimaryButton
+                size="medium"
+                label="Apply"
+                onClick={() => alert('functionality not yet implemented')}
+                isDisabled={false}
+              />
+            </div>
+          )}
           <Link
             to={`${match.url}/settings`}
             className={`${styles.settingIcon}`}
@@ -290,6 +292,7 @@ const TableContainer = () => {
               tooltipInteraction={true}
               reactiveCustomComponents={true}
               overlayLoadingTemplate={overlayLoadingTemplate}
+              onSelectionChanged={onSelectionChanged}
               // onCellDoubleClick={onCellDoubleClick}
               //  suppressClickEdit={true}
               // editType="fullRow"
