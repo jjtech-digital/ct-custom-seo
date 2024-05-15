@@ -1,47 +1,17 @@
 import PrimaryButton from '@commercetools-uikit/primary-button';
-import { useEffect, useState } from 'react';
 import { descriptionPattern, titlePattern } from '../../constants';
 import { useProducts } from '../../scripts/useProducts/useProducts';
 import { useAppContext } from '../../context/AppContext';
+import { useApplicationContext } from '@commercetools-frontend/application-shell-connectors';
 
 export default (props: any) => {
-  const [editing, setEditing] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-  const { state, setState } = useAppContext();
+  const { setState } = useAppContext();
 
   const { getSeoMetaData, updateProductSeoMetaData } = useProducts();
-
-  useEffect(() => {
-    props.api.addEventListener('rowEditingStarted', handleRowEditingStarted);
-    props.api.addEventListener('rowEditingStopped', handleRowEditingStopped);
-
-    return () => {
-      props.api.removeEventListener(
-        'rowEditingStarted',
-        handleRowEditingStarted
-      );
-      props.api.removeEventListener(
-        'rowEditingStopped',
-        handleRowEditingStopped
-      );
-    };
-  }, []);
-
-  function handleRowEditingStarted(params: any) {
-    if (props.node === params.node) {
-      setEditing(true);
-    } else {
-      setDisabled(true);
-    }
-  }
-
-  function handleRowEditingStopped(params: any) {
-    if (props.node === params.node) {
-      setEditing(false);
-    } else {
-      setDisabled(false);
-    }
-  }
+  const { dataLocale } = useApplicationContext((context) => ({
+    dataLocale: context.dataLocale,
+    projectLanguages: context.project?.languages,
+  }));
 
   const handleGenerateClick = async (params: any) => {
     props.context.loadingOverlayMessage = 'Generating meta data';
@@ -102,6 +72,7 @@ export default (props: any) => {
           metaTitle,
           metaDescription,
           updatedRowData.version,
+          dataLocale,
           setState
         );
         props.gridRef.current!.api.hideOverlay();
@@ -121,7 +92,7 @@ export default (props: any) => {
             size="medium"
             label="Generate"
             onClick={() => handleGenerateClick(props)}
-            isDisabled={disabled}
+            isDisabled={false}
           />
         </div>
         <div style={{ marginInline: '6px' }}>
@@ -129,7 +100,7 @@ export default (props: any) => {
             size="medium"
             label="Apply"
             onClick={() => handleApplyClick(props.rowIndex)}
-            isDisabled={disabled}
+            isDisabled={false}
           />
         </div>
       </div>

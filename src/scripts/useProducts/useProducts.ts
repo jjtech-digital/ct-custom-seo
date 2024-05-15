@@ -23,6 +23,7 @@ export function useProducts() {
     metaTitle: string,
     metaDescription: string,
     version: number,
+    dataLocale: string| null,
     setState: Function
   ) => {
     const response = await updateProductSeoMeta(
@@ -30,6 +31,7 @@ export function useProducts() {
       metaTitle,
       metaDescription,
       version,
+      dataLocale,
       setState
     );
     return response;

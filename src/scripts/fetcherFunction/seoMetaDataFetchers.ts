@@ -30,8 +30,10 @@ export const updateProductSeoMeta = async (
   metaTitle: string,
   metaDescription: string,
   version: number,
+  dataLocale:any,
   setState: Function
 ) => {
+  
   const apiUrl = `https://api.australia-southeast1.gcp.commercetools.com/jj-seo-app/products/${productId}`;
   const accessToken = localStorage.getItem('token');
   const headers = {
@@ -45,16 +47,14 @@ export const updateProductSeoMeta = async (
       {
         action: 'setMetaTitle',
         metaTitle: {
-          de: metaTitle,
-          en: metaTitle,
+          [dataLocale]: metaTitle,
         },
         staged: false,
       },
       {
         action: 'setMetaDescription',
         metaDescription: {
-          de: metaDescription,
-          en: metaDescription,
+          [dataLocale]: metaDescription,
         },
         staged: false,
       },
