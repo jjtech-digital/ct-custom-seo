@@ -176,7 +176,7 @@ const TableContainer = () => {
     gridRef.current!.api.showLoadingOverlay();
 
     const bulkProductIds: any = selectedRows?.map((products) => products.id);
-    const aiBulkResponse = await getBulkSeoMetaData(bulkProductIds);
+    const aiBulkResponse = await getBulkSeoMetaData(bulkProductIds, dataLocale);
 
     const updatedTableData = [...tableData];
 

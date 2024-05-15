@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { apiBaseUrl } from '../../constants';
 
-export const bulkGenerateSeoMetaData = async (productIds: string[]) => {
+export const bulkGenerateSeoMetaData = async (
+  productIds: string[],
+  dataLocale: any
+) => {
   const accessToken = localStorage.getItem('token');
   const batchSize = 20;
   const totalBatches = Math.ceil(productIds.length / batchSize);
@@ -15,6 +18,7 @@ export const bulkGenerateSeoMetaData = async (productIds: string[]) => {
     const body = {
       ids: batchIds,
       token: accessToken,
+      locale: dataLocale,
     };
 
     try {

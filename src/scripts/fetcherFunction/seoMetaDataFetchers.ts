@@ -1,11 +1,15 @@
 import axios from 'axios';
 import { apiBaseUrl } from '../../constants';
 
-export const generateSeoMetaData = async (productId: string) => {
+export const generateSeoMetaData = async (
+  productId: string,
+  dataLocale: any
+) => {
   const accessToken = localStorage.getItem('token');
   const body = {
     id: productId,
     token: accessToken,
+    locale: dataLocale,
   };
 
   try {
@@ -30,10 +34,9 @@ export const updateProductSeoMeta = async (
   metaTitle: string,
   metaDescription: string,
   version: number,
-  dataLocale:any,
+  dataLocale: any,
   setState: Function
 ) => {
-  
   const apiUrl = `https://api.australia-southeast1.gcp.commercetools.com/jj-seo-app/products/${productId}`;
   const accessToken = localStorage.getItem('token');
   const headers = {
