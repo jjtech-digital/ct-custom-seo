@@ -31,6 +31,8 @@ import { useAppContext } from '../../context/AppContext';
 import Loader from '../Loader/Loader';
 import ActionRenderer from '../Renderers/ActionRenderer';
 import CustomLoadingOverlay from '../CustomLoadingOverlay/CustomLoadingOverlay';
+import { useBulkProducts } from '../../scripts/useBulkProducts/useBulkProducts';
+import { descriptionPattern, titlePattern } from '../../constants';
 
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
@@ -38,7 +40,7 @@ const TableContainer = () => {
   const [tableData, setTableData] = useState<IProduct[]>([]);
   const [fetchedData, setFetchedData] = useState<IFetchrawData>();
   const [search, setSearch] = useState('');
-  const [selectedRows, setSelectedRows] = useState<IProduct[]>();
+  const [selectedRows, setSelectedRows] = useState<IProduct[] | null>([]);
   const [responseFromAi, setResponseFromAi] = useState<IResponseFromAi>({
     id: null,
     title: null,
@@ -55,6 +57,8 @@ const TableContainer = () => {
 
   const { page, perPage } = usePaginationState();
   const { getAllProductsData } = useProducts();
+  const { getBulkSeoMetaData } = useBulkProducts();
+
   const { state, setState } = useAppContext();
   const match = useRouteMatch();
   const offSet = (page?.value - 1) * perPage?.value;
@@ -164,7 +168,49 @@ const TableContainer = () => {
   const onSelectionChanged = useCallback(() => {
     var getSelectedRows = gridRef.current!.api.getSelectedRows();
     setSelectedRows(getSelectedRows);
-  }, []);
+  }, [offSet, perPage?.value]);
+
+  const handleBulkGenerateClick = async () => {
+    context.loadingOverlayMessage =
+      'Generating SEO metadata for selected products. This may take some time.';
+    gridRef.current!.api.showLoadingOverlay();
+
+    const bulkProductIds: any = selectedRows?.map((products) => products.id);
+    const aiBulkResponse = await getBulkSeoMetaData(bulkProductIds);
+
+    const updatedTableData = [...tableData];
+
+    // Loop through each response in aiBulkResponse
+    aiBulkResponse.forEach((response) => {
+      const { data } = response;
+      const { choices } = data;
+      const choice = choices[0];
+
+      const { content: message } = choice.message;
+
+      const titleMatch = message?.match(titlePattern);
+      const title = titleMatch ? titleMatch[2].trim() : null;
+
+      const descriptionMatch = message?.match(descriptionPattern);
+      const description = descriptionMatch ? descriptionMatch[2].trim() : null;
+      const cleanedTitle = removeDoubleQuotes(title);
+      const cleanedDescription = removeDoubleQuotes(description);
+
+      const index = updatedTableData.findIndex(
+        (item) => item.id === data.productId
+      );
+      if (index !== -1) {
+        updatedTableData[index].masterData.current.metaTitle = cleanedTitle;
+        updatedTableData[index].masterData.current.metaDescription =
+          cleanedDescription;
+      }
+    });
+
+    setTableData(updatedTableData);
+
+    gridRef.current!.api.hideOverlay();
+    context.loadingOverlayMessage = 'Loading';
+  };
 
   useEffect(() => {
     setTableData([]);
@@ -249,7 +295,7 @@ const TableContainer = () => {
               <PrimaryButton
                 size="medium"
                 label="Generate"
-                onClick={() => alert('functionality not yet implemented')}
+                onClick={handleBulkGenerateClick}
                 isDisabled={false}
               />
               <PrimaryButton
