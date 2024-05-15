@@ -172,7 +172,7 @@ const TableContainer = () => {
 
   const handleBulkGenerateClick = async () => {
     context.loadingOverlayMessage =
-      'Generating SEO metadata for selected products. This may take some time.';
+      'Generating SEO metadata for selected products. This may take some time';
     gridRef.current!.api.showLoadingOverlay();
 
     const bulkProductIds: any = selectedRows?.map((products) => products.id);
