@@ -29,6 +29,7 @@ export const generateSeoMetaData = async (
     return null;
   }
 };
+
 export const updateProductSeoMeta = async (
   productId: string,
   metaTitle: string,
@@ -37,47 +38,38 @@ export const updateProductSeoMeta = async (
   dataLocale: any,
   setState: Function
 ) => {
-  const apiUrl = `https://api.australia-southeast1.gcp.commercetools.com/jj-seo-app/products/${productId}`;
   const accessToken = localStorage.getItem('token');
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    'Content-Type': 'application/json',
+  const body = {
+    metaTitle,
+    metaDescription,
+    version,
+    dataLocale,
   };
-  // let version = 1;
-  const data = {
-    version: version,
-    actions: [
-      {
-        action: 'setMetaTitle',
-        metaTitle: {
-          [dataLocale]: metaTitle,
-        },
-        staged: false,
-      },
-      {
-        action: 'setMetaDescription',
-        metaDescription: {
-          [dataLocale]: metaDescription,
-        },
-        staged: false,
-      },
-    ],
-  };
+
   try {
-    const response = await axios.post(apiUrl, data, { headers });
-    // version = response.data.version;
+    const response = await axios.post(
+      `${apiBaseUrl}/products/update-seo-meta/${productId}`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
     setState((prev: any) => ({
       ...prev,
       notificationMessage: 'SEO title and description updated successfully.',
       notificationMessageType: 'success',
     }));
-    console.log('Product description updated successfully:', response.data);
+    console.log('Product SEO meta updated successfully:', response.data);
   } catch (error) {
     setState((prev: any) => ({
       ...prev,
       notificationMessage: 'Error updating SEO title and description.',
       notificationMessageType: 'error',
     }));
-    console.error('Error updating product description:', error);
+    console.error('Error updating product SEO meta:', error);
   }
 };
