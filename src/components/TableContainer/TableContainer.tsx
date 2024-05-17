@@ -57,7 +57,7 @@ const TableContainer = () => {
 
   const { page, perPage } = usePaginationState();
   const { getAllProductsData } = useProducts();
-  const { getBulkSeoMetaData } = useBulkProducts();
+  const { getBulkSeoMetaData, applyBulkProducts } = useBulkProducts();
 
   const { state, setState } = useAppContext();
   const match = useRouteMatch();
@@ -176,7 +176,11 @@ const TableContainer = () => {
     gridRef.current!.api.showLoadingOverlay();
 
     const bulkProductIds: any = selectedRows?.map((products) => products.id);
-    const aiBulkResponse = await getBulkSeoMetaData(bulkProductIds, dataLocale);
+    const aiBulkResponse = await getBulkSeoMetaData(
+      bulkProductIds,
+      dataLocale,
+      setState
+    );
 
     const updatedTableData = [...tableData];
 
@@ -210,6 +214,34 @@ const TableContainer = () => {
 
     gridRef.current!.api.hideOverlay();
     context.loadingOverlayMessage = 'Loading';
+  };
+  const handleBulkApplyClick = async () => {
+    const hasEmptyMeta = selectedRows?.some(
+      (product) =>
+        !product.masterData.current.metaTitle ||
+        !product.masterData.current.metaDescription
+    );
+    if (hasEmptyMeta) {
+      setState((prev: any) => ({
+        ...prev,
+        notificationMessage:
+          'SEO Title or description cannot be empty for selected products.',
+        notificationMessageType: 'error',
+      }));
+    } else {
+      const bulkSelectedProductsData = selectedRows?.map((product) => ({
+        productId: product.id,
+        metaTitle: product.masterData.current.metaTitle,
+        metaDescription: product.masterData.current.metaDescription,
+        version: product.version,
+      }));
+      context.loadingOverlayMessage =
+        'Applying SEO meta for selected products. This may take some time';
+      gridRef.current!.api.showLoadingOverlay();
+      await applyBulkProducts(bulkSelectedProductsData, dataLocale, setState);
+      gridRef.current!.api.hideOverlay();
+      context.loadingOverlayMessage = 'Loading';
+    }
   };
 
   useEffect(() => {
@@ -307,7 +339,7 @@ const TableContainer = () => {
               <PrimaryButton
                 size="medium"
                 label="Apply"
-                onClick={() => alert('functionality not yet implemented')}
+                onClick={handleBulkApplyClick}
                 isDisabled={false}
               />
             </div>
