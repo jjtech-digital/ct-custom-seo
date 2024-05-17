@@ -76,7 +76,7 @@ export const applyBulkProductSeoMeta = async (
 
     try {
       const response = await axios.post(
-        `http://localhost:3002/products/bulk-update-seo-meta`,
+        `${apiBaseUrl}/products/bulk-update-seo-meta`,
         body,
         {
           headers: {
