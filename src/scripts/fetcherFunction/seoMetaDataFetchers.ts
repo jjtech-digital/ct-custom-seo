@@ -63,7 +63,7 @@ export const updateProductSeoMeta = async (
       notificationMessage: 'SEO title and description updated successfully.',
       notificationMessageType: 'success',
     }));
-    console.log('Product SEO meta updated successfully:', response.data);
+    return response.data;
   } catch (error) {
     setState((prev: any) => ({
       ...prev,

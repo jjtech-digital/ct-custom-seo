@@ -37,4 +37,5 @@ export interface IResponseFromAi {
   id: string | null | undefined;
   title: string | null | undefined;
   description: string | null | undefined;
+  version: number | null | undefined;
 }
