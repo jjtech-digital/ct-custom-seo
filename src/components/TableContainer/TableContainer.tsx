@@ -248,7 +248,7 @@ const TableContainer = () => {
         const updatedTableData = [...tableData];
 
         res.forEach((updatedProduct: any) => {
-          const index = updatedTableData.findIndex(
+          const index = updatedTableData?.findIndex(
             (item) => item?.id === updatedProduct?.data?.id
           );
           if (index !== -1) {
