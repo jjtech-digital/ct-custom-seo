@@ -45,7 +45,7 @@ const TableContainer = () => {
     id: null,
     title: null,
     description: null,
-    version: null
+    version: null,
   });
 
   const gridRef = useRef<AgGridReact>(null);
@@ -238,7 +238,27 @@ const TableContainer = () => {
       context.loadingOverlayMessage =
         'Applying SEO meta for selected products. This may take some time';
       gridRef.current!.api.showLoadingOverlay();
-      await applyBulkProducts(bulkSelectedProductsData, dataLocale, setState);
+
+      const res: any = await applyBulkProducts(
+        bulkSelectedProductsData,
+        dataLocale,
+        setState
+      );
+      if (res) {
+        const updatedTableData = [...tableData];
+
+        res.forEach((updatedProduct: any) => {
+          const index = updatedTableData?.findIndex(
+            (item) => item?.id === updatedProduct?.data?.id
+          );
+          if (index !== -1) {
+            updatedTableData[index].version = updatedProduct?.data?.version;
+          }
+        });
+
+        setTableData(updatedTableData);
+      }
+
       gridRef.current!.api.hideOverlay();
       context.loadingOverlayMessage = 'Loading';
     }
@@ -299,8 +319,7 @@ const TableContainer = () => {
         updatedTableData[index].masterData.current.metaTitle = cleanedTitle;
         updatedTableData[index].masterData.current.metaDescription =
           cleanedDescription;
-        updatedTableData[index].version =
-        responseFromAi.version
+        updatedTableData[index].version = responseFromAi.version;
         setTableData(updatedTableData);
       }
     }
