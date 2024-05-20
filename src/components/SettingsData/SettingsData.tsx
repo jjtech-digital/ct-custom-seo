@@ -1,8 +1,6 @@
 import { ISelectedPageProps, NavItems } from './Settings.types';
 import SettingsRulesData from './SettingsRulesData';
 import SettingsOpenAiData from './SettingsOpenAiData';
-import SettingsAwsData from './SettingsAwsData';
-import SettingsGoogleAiData from './SettingsGoogleAiData';
 export interface ISetingDataProps {
   defaultPage: ISelectedPageProps | undefined;
 }
@@ -15,11 +13,6 @@ const SettingsData = ({ defaultPage }: ISetingDataProps) => {
             return <SettingsRulesData />;
           case NavItems.OPENAI:
             return <SettingsOpenAiData />;
-          case NavItems.AWS:
-            return <SettingsAwsData />;
-          case NavItems.GOOGLEAI:
-            return <SettingsGoogleAiData />;
-
           default:
             return null;
         }
