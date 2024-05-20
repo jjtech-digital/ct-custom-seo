@@ -138,7 +138,7 @@ const TableContainer = () => {
     }),
     []
   );
-  const onGridReady = (params: { api: SetStateAction<null> }) => {
+  const onGridReady = (params: any) => {
     setGridApi(params.api);
     setColumnApi(params.columnApi);
   };
@@ -338,7 +338,7 @@ const TableContainer = () => {
             onChange={(event: { target: { value: SetStateAction<string> } }) =>
               setSearch(event.target.value)
             }
-            onSubmit={() => alert(search)}
+            onSubmit={() => alert('Functionality not yet implemented.')}
             onReset={() => setSearch('')}
             // isClearable={false}
           />
@@ -417,5 +417,3 @@ const TableContainer = () => {
   );
 };
 export default TableContainer;
-
-// TProductProjectionSearchResult
