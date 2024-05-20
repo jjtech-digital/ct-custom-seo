@@ -30,6 +30,7 @@ export default (props: any) => {
       id: params.data.id,
       title: title,
       description: description,
+      version: params.data.version
     });
     props.gridRef.current!.api.hideOverlay();
     props.context.loadingOverlayMessage = 'Loading';
@@ -67,7 +68,7 @@ export default (props: any) => {
       } else {
         props.context.loadingOverlayMessage = 'Applying';
         props.gridRef.current!.api.showLoadingOverlay();
-        await updateProductSeoMetaData(
+        const res = await updateProductSeoMetaData(
           updatedRowData.id,
           metaTitle,
           metaDescription,
@@ -75,12 +76,14 @@ export default (props: any) => {
           dataLocale,
           setState
         );
+        props.setResponseFromAi((prev: any) => ({
+          ...prev,
+          version: res.data.version,
+        }));
         props.gridRef.current!.api.hideOverlay();
         props.context.loadingOverlayMessage = 'Loading';
       }
     }
-
-    // Stop editing the grid
     props.gridRef?.current!?.api?.stopEditing(false);
   };
 

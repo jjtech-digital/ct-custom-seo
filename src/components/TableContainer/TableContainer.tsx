@@ -45,6 +45,7 @@ const TableContainer = () => {
     id: null,
     title: null,
     description: null,
+    version: null
   });
 
   const gridRef = useRef<AgGridReact>(null);
@@ -184,7 +185,6 @@ const TableContainer = () => {
 
     const updatedTableData = [...tableData];
 
-    // Loop through each response in aiBulkResponse
     aiBulkResponse.forEach((response) => {
       const { data } = response;
       const { choices } = data;
@@ -284,7 +284,8 @@ const TableContainer = () => {
     if (
       responseFromAi?.id &&
       responseFromAi?.title &&
-      responseFromAi?.description
+      responseFromAi?.description &&
+      responseFromAi?.version
     ) {
       const updatedTableData = [...tableData];
       const index = updatedTableData.findIndex(
@@ -298,6 +299,8 @@ const TableContainer = () => {
         updatedTableData[index].masterData.current.metaTitle = cleanedTitle;
         updatedTableData[index].masterData.current.metaDescription =
           cleanedDescription;
+        updatedTableData[index].version =
+        responseFromAi.version
         setTableData(updatedTableData);
       }
     }
