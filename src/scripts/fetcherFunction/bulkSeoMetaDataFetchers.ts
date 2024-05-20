@@ -100,5 +100,5 @@ export const applyBulkProductSeoMeta = async (
       console.error('Error applying SEO meta in batch:', error);
     }
   }
-
+  return responses;
 };
