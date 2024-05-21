@@ -17,7 +17,7 @@ export default (props: any) => {
     props.context.loadingOverlayMessage = 'Generating meta data';
 
     props.gridRef.current!.api.showLoadingOverlay();
-    const aiResponse = await getSeoMetaData(params?.data?.id, dataLocale);
+    const aiResponse = await getSeoMetaData(params?.data?.id, dataLocale, setState);
     let metaData = aiResponse?.choices?.[0]?.message?.content;
 
     const titleMatch = metaData?.match(titlePattern);

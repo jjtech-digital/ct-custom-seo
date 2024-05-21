@@ -7,6 +7,16 @@ export const bulkGenerateSeoMetaData = async (
   setState: Function
 ) => {
   const accessToken = localStorage.getItem('token');
+  const openAiKey = localStorage.getItem('openAIKey');
+  if (!openAiKey) {
+    setState((prev: any) => ({
+      ...prev,
+      notificationMessage:
+        'OpenAI key is missing. Please set it in the settings.',
+      notificationMessageType: 'error',
+    }));
+    return null;
+  }
   const batchSize = 20;
   const totalBatches = Math.ceil(productIds.length / batchSize);
   let metaDataResponses: any[] = [];
@@ -20,6 +30,7 @@ export const bulkGenerateSeoMetaData = async (
       ids: batchIds,
       token: accessToken,
       locale: dataLocale,
+      openAiKey: openAiKey,
     };
 
     try {
@@ -32,7 +43,15 @@ export const bulkGenerateSeoMetaData = async (
           },
         }
       );
-
+      const has401Error = response?.data?.some((res: any) => res?.data?.status === 401);
+      if (has401Error) {
+        setState((prev: any) => ({
+          ...prev,
+          notificationMessage: "Incorrect API key provided",
+          notificationMessageType: 'error',
+        }));
+        return null; 
+      }
       metaDataResponses = [...metaDataResponses, ...response.data];
     } catch (error) {
       setState((prev: any) => ({

@@ -26,7 +26,7 @@ export interface SubmitEvent {
 }
 const SettingsRulesData = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { createRuleshandler, getCtObjToken, getsavedRules } = useSettings();
+  const { createRuleshandler, getsavedRules } = useSettings();
   const { state, setState } = useAppContext();
   const {
     control,

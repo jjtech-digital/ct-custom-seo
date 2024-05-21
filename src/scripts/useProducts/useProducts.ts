@@ -14,8 +14,8 @@ export function useProducts() {
     return response;
   };
 
-  const getSeoMetaData = async (productId: string,  dataLocale: string| null) => {
-    const response = await generateSeoMetaData(productId, dataLocale);
+  const getSeoMetaData = async (productId: string,  dataLocale: string| null, setState:Function) => {
+    const response = await generateSeoMetaData(productId, dataLocale,setState);
     return response;
   };
   const updateProductSeoMetaData = async (
