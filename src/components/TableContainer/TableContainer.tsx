@@ -160,8 +160,8 @@ const TableContainer = () => {
     };
   }, []);
   const removeDoubleQuotes = (text: string) => {
-    if (text.startsWith('"') && text.endsWith('"')) {
-      return text.slice(1, -1);
+    if (text?.startsWith('"') && text?.endsWith('"')) {
+      return text?.slice(1, -1);
     }
     return text;
   };
@@ -176,7 +176,7 @@ const TableContainer = () => {
       'Generating SEO metadata for selected products. This may take some time';
     gridRef.current!.api.showLoadingOverlay();
 
-    const bulkProductIds: any = selectedRows?.map((products) => products.id);
+    const bulkProductIds: any = selectedRows?.map((products) => products?.id);
     const aiBulkResponse = await getBulkSeoMetaData(
       bulkProductIds,
       dataLocale,
@@ -185,23 +185,18 @@ const TableContainer = () => {
 
     const updatedTableData = [...tableData];
 
-    aiBulkResponse.forEach((response) => {
-      const { data } = response;
-      const { choices } = data;
-      const choice = choices[0];
-
-      const { content: message } = choice.message;
-
+    aiBulkResponse?.forEach((response) => {
+     const message =  response?.data?.choices?.[0]?.message?.content;
       const titleMatch = message?.match(titlePattern);
-      const title = titleMatch ? titleMatch[2].trim() : null;
+      const title = titleMatch ? titleMatch[2]?.trim() : null;
 
       const descriptionMatch = message?.match(descriptionPattern);
-      const description = descriptionMatch ? descriptionMatch[2].trim() : null;
+      const description = descriptionMatch ? descriptionMatch[2]?.trim() : null;
       const cleanedTitle = removeDoubleQuotes(title);
       const cleanedDescription = removeDoubleQuotes(description);
 
       const index = updatedTableData.findIndex(
-        (item) => item.id === data.productId
+        (item) => item.id === response?.data?.productId
       );
       if (index !== -1) {
         updatedTableData[index].masterData.current.metaTitle = cleanedTitle;
