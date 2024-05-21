@@ -41,3 +41,6 @@ Welcome to the AI-Driven SEO Meta Generator for commercetools! This application 
 
 - Click the "Apply" button in the product row to update the metadata in commercetools.
 
+
+
+## Thank you for using the AI-Driven SEO Meta Generator for commercetools!
