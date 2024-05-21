@@ -36,10 +36,10 @@ const SettingsHeader = ({
         defaultSelected={defaultPage?.name}
         onChange={(value) => menuToggleHandler(value)}
       >
-        {selectedPage.map((navMenu, i) => {
+        {selectedPage.map((navMenu) => {
           return (
             <ViewSwitcher.Button key={navMenu?.name} value={navMenu?.name}>
-              {navMenu?.title}{' '}
+              {navMenu?.title}
             </ViewSwitcher.Button>
           );
         })}

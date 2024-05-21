@@ -1,9 +1,7 @@
 import Spacings from '@commercetools-uikit/spacings';
 import FlatButton from '@commercetools-uikit/flat-button';
 import { BackIcon } from '@commercetools-uikit/icons';
-import { useIntl } from 'react-intl';
 import Text from '@commercetools-uikit/text';
-import messages from './Messages';
 import { Link as RouterLink } from 'react-router-dom';
 import SettingsHeader from '../SettingsHeader/SettingsHeader';
 import SettingsData from '../SettingsData/SettingsData';
@@ -12,7 +10,6 @@ import { settingsNavMock } from '../SettingsData/Settings.mock';
 import { ISelectedPageProps } from '../SettingsData/Settings.types';
 
 const Settings = (props: { linkToProducts: any }) => {
-  const intl = useIntl();
   const [selectedPage, setSelectedPage] =
     useState<ISelectedPageProps[]>(settingsNavMock);
   const defaultPage = selectedPage?.find((item) => item.isDefaultSelected);
@@ -22,10 +19,10 @@ const Settings = (props: { linkToProducts: any }) => {
         <FlatButton
           as={RouterLink}
           to={props.linkToProducts}
-          label={intl.formatMessage(messages.backToProducts)}
+          label={'Back to Products'}
           icon={<BackIcon />}
         />
-        <Text.Headline as="h2" intlMessage={messages.title} />
+        <Text.Headline as="h2" >{'Settings'}</Text.Headline>
       </Spacings.Stack>
       <SettingsHeader
         defaultPage={defaultPage}
