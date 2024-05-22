@@ -80,7 +80,7 @@ const TableContainer = () => {
       flex: 3.5,
       editable: false,
       valueGetter: (params: any) => {
-        return params.data?.masterData?.current?.nameAllLocales?.[0]?.value;
+        return params.data?.masterData?.current?.name
       },
     },
     {
@@ -266,28 +266,11 @@ const TableContainer = () => {
         const productsData = await getAllProductsData(
           Number(perPage?.value),
           Number(offSet),
+          dataLocale,
           setState
         );
-        const filteredData = productsData?.data?.map(
-          (product: { masterData: { current: { nameAllLocales: any[] } } }) => {
-            const nameInCurrentLocale =
-              product?.masterData?.current?.nameAllLocales?.find(
-                (item) => item?.locale === dataLocale
-              );
-            return {
-              ...product,
-              masterData: {
-                ...product?.masterData,
-                current: {
-                  ...product?.masterData?.current,
-                  nameAllLocales: [nameInCurrentLocale],
-                },
-              },
-            };
-          }
-        );
         setFetchedData(productsData);
-        setTableData(filteredData);
+        setTableData(productsData.data);
       } catch (error) {
         console.log(error);
       }
