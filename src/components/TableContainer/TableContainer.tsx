@@ -40,6 +40,7 @@ const TableContainer = () => {
   const [tableData, setTableData] = useState<IProduct[]>([]);
   const [totalProductCount, setTotalProductCount] = useState<number>();
   const [search, setSearch] = useState('');
+  const [searchPerformed, setSearchPerformed] = useState(false);
   const [selectedRows, setSelectedRows] = useState<IProduct[] | null>([]);
   const [responseFromAi, setResponseFromAi] = useState<IResponseFromAi>({
     id: null,
@@ -260,7 +261,17 @@ const TableContainer = () => {
     }
   };
   const handleSearch = async () => {
+
+    setSearchPerformed(true);
     try {
+      if (!search) {
+        setState((prev: any) => ({
+          ...prev,
+          notificationMessage: 'Search field cannot be empty.',
+          notificationMessageType: 'error',
+        }));
+        return;
+      }
       if (!dataLocale) {
         throw new Error('Locale is not defined');
       }
@@ -300,6 +311,7 @@ const TableContainer = () => {
     }
   };
   const fetchData = async () => {
+    setSearchPerformed(false);
     try {
       const productsData = await getAllProductsData(
         Number(perPage?.value),
@@ -398,7 +410,7 @@ const TableContainer = () => {
           </Link>
         </div>
       </div>
-      {!state.pageLoading && !!tableData?.length && tableData.length > 0 ? (
+      {!state.pageLoading && !!tableData?.length ? (
         <div
           className="ag-theme-quartz"
           style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
@@ -435,7 +447,16 @@ const TableContainer = () => {
           />
         </div>
       ) : (
-        <Loader shoudLoaderSpinnerShow={true} loadingMessage={'Loading...'} />
+        <div 
+        className={`${styles.emptyState}`}>
+          {state.pageLoading ? (
+            <Loader shoudLoaderSpinnerShow={true} loadingMessage={'Loading...'} />
+          ) : searchPerformed ? (
+            <Text.Body>{"No products found matching your search criteria."}</Text.Body>
+          ) : (
+            <Text.Body>{"No products available."}</Text.Body>
+          )}
+        </div>
       )}
     </div>
   );
