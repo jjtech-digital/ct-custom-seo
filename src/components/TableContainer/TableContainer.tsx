@@ -21,7 +21,6 @@ import { usePaginationState } from '@commercetools-uikit/hooks';
 import { GearIcon } from '@commercetools-uikit/icons';
 import { Link, useRouteMatch } from 'react-router-dom';
 import {
-  IFetchrawData,
   IProduct,
   IResponseFromAi,
 } from './TableContainer.types';
@@ -33,12 +32,13 @@ import ActionRenderer from '../Renderers/ActionRenderer';
 import CustomLoadingOverlay from '../CustomLoadingOverlay/CustomLoadingOverlay';
 import { useBulkProducts } from '../../scripts/useBulkProducts/useBulkProducts';
 import { descriptionPattern, titlePattern } from '../../constants';
+import { useSearch } from '../../scripts/useSearch/useSearch';
 
 const TableContainer = () => {
   const [gridApi, setGridApi] = useState(null);
   const [columnApi, setColumnApi] = useState(null);
   const [tableData, setTableData] = useState<IProduct[]>([]);
-  const [fetchedData, setFetchedData] = useState<IFetchrawData>();
+  const [totalProductCount, setTotalProductCount] = useState<number>();
   const [search, setSearch] = useState('');
   const [selectedRows, setSelectedRows] = useState<IProduct[] | null>([]);
   const [responseFromAi, setResponseFromAi] = useState<IResponseFromAi>({
@@ -59,6 +59,7 @@ const TableContainer = () => {
   const { page, perPage } = usePaginationState();
   const { getAllProductsData } = useProducts();
   const { getBulkSeoMetaData, applyBulkProducts } = useBulkProducts();
+  const fetchSearchResults = useSearch();
 
   const { state, setState } = useAppContext();
   const match = useRouteMatch();
@@ -80,7 +81,7 @@ const TableContainer = () => {
       flex: 3.5,
       editable: false,
       valueGetter: (params: any) => {
-        return params.data?.masterData?.current?.name
+        return params.data?.masterData?.current?.name;
       },
     },
     {
@@ -186,7 +187,7 @@ const TableContainer = () => {
     const updatedTableData = [...tableData];
 
     aiBulkResponse?.forEach((response) => {
-     const message =  response?.data?.choices?.[0]?.message?.content;
+      const message = response?.data?.choices?.[0]?.message?.content;
       const titleMatch = message?.match(titlePattern);
       const title = titleMatch ? titleMatch[2]?.trim() : null;
 
@@ -258,24 +259,66 @@ const TableContainer = () => {
       context.loadingOverlayMessage = 'Loading';
     }
   };
-
-  useEffect(() => {
-    setTableData([]);
-    const fetchData = async () => {
-      try {
-        const productsData = await getAllProductsData(
-          Number(perPage?.value),
-          Number(offSet),
-          dataLocale,
-          setState
-        );
-        setFetchedData(productsData);
-        setTableData(productsData.data);
-      } catch (error) {
-        console.log(error);
+  const handleSearch = async () => {
+    try {
+      if (!dataLocale) {
+        throw new Error('Locale is not defined');
       }
-    };
-    fetchData();
+      const data = await fetchSearchResults(
+        search,
+        Number(perPage?.value),
+        Number(offSet),
+        dataLocale,
+        setState
+      );
+      const filteredData = data?.results?.map((product: any) => {
+        const nameInCurrentLocale = product?.name?.[dataLocale];
+        const metaTitleInCurrentLocale = product?.metaTitle?.[dataLocale];
+        const metaDescriptionInCurrentLocale =
+          product?.metaDescription?.[dataLocale];
+
+        return {
+          id: product.id,
+          version: product.version,
+          key: product.key,
+          name: nameInCurrentLocale,
+          seoTitle: metaTitleInCurrentLocale,
+          seoDescription: metaDescriptionInCurrentLocale,
+          masterData: {
+            current: {
+              name: nameInCurrentLocale,
+              metaTitle: metaTitleInCurrentLocale,
+              metaDescription: metaDescriptionInCurrentLocale,
+            },
+          },
+        };
+      });
+      setTableData(filteredData);
+      setTotalProductCount(data.total);
+    } catch (error) {
+      console.error('Search failed:', error);
+    }
+  };
+  const fetchData = async () => {
+    try {
+      const productsData = await getAllProductsData(
+        Number(perPage?.value),
+        Number(offSet),
+        dataLocale,
+        setState
+      );
+      setTotalProductCount(productsData?.total);
+      setTableData(productsData.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (search) {
+      handleSearch();
+    } else {
+      fetchData();
+    }
   }, [dataLocale, offSet, perPage?.value]);
 
   useEffect(() => {
@@ -316,8 +359,11 @@ const TableContainer = () => {
             onChange={(event: { target: { value: SetStateAction<string> } }) =>
               setSearch(event.target.value)
             }
-            onSubmit={() => alert('Functionality not yet implemented.')}
-            onReset={() => setSearch('')}
+            onSubmit={handleSearch}
+            onReset={() => {
+              setSearch('');
+              fetchData();
+            }}
             // isClearable={false}
           />
         </div>
@@ -380,7 +426,7 @@ const TableContainer = () => {
             />
           </div>
           <Pagination
-            totalItems={fetchedData?.total || 0}
+            totalItems={totalProductCount || 0}
             page={page?.value}
             onPageChange={page?.onChange}
             perPage={perPage?.value}

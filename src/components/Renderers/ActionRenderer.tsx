@@ -38,12 +38,12 @@ export default (props: any) => {
 
   const handleApplyClick = async (rowIndex: number) => {
     const updatedRowData =
-      props.gridRef?.current!?.api?.getDisplayedRowAtIndex(rowIndex)?.data;
+      props?.gridRef?.current!?.api?.getDisplayedRowAtIndex(rowIndex)?.data;
 
     if (
       updatedRowData &&
-      updatedRowData.masterData &&
-      updatedRowData.masterData.current
+      updatedRowData?.masterData &&
+      updatedRowData?.masterData?.current
     ) {
       const { metaTitle, metaDescription } = updatedRowData.masterData.current;
 
@@ -78,7 +78,7 @@ export default (props: any) => {
         );
         props.setResponseFromAi((prev: any) => ({
           ...prev,
-          version: res.data.version,
+          version: res?.data?.version,
         }));
         props.gridRef.current!.api.hideOverlay();
         props.context.loadingOverlayMessage = 'Loading';
